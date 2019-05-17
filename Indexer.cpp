@@ -14,17 +14,6 @@ struct Node {
 class SuffixTree {
 private:
 	
-	string* get_suffixes(string word) {
-		string* suffixes = new string[word.length()];
-		suffixes[0] = word;
-		for (int i = 1; i < word.length(); i++) {
-			suffixes[i] = word;
-			suffixes[i].erase(suffixes[i].begin(), suffixes[i].begin() + i);
-		}
-				
-		return suffixes;	
-	}
-	
 	void add(string word, Node* pInit) {
 		Node* pNode = pInit;
 		for (int i = 0; i < 6; i++) {
@@ -88,20 +77,40 @@ private:
 			pNode->alphabet[5] = word;
 	}
 	
+	//string* get_suffixes(string word) {
+	//	string* suffixes = new string[word.length()];
+	//	suffixes[0] = word;
+	//	for (int i = 1; i < word.length(); i++) {
+	//		suffixes[i] = word;
+	//		suffixes[i].erase(suffixes[i].begin(), suffixes[i].begin() + i);
+	//	}
+	//			
+	//	return suffixes;	
+	//}
+	
 public:
 		
 	Node* pRoot = new Node;
 	
 	SuffixTree(string word) {
 		word = word + "$";
-		string* suffixes = get_suffixes(word);
-		for (int i = 0; i < word.length(); i++) {
-			add(*(suffixes + i), pRoot);
+		//string* suffixes = get_suffixes(word);
+		//for (int i = 0; i < word.length(); i++) {
+		//	add(*(suffixes + i), pRoot);
+		//}
+		
+		string suffixes = word;                                  
+		add(suffixes, pRoot);											//add the entire word
+		for (int i = 1; i < word.length();i++){ 
+			suffixes.erase(suffixes.begin(), suffixes.begin()+1);       //each iteration takes off the first letter
+			add(suffixes, pRoot);
 		}
 	}
 	
 };
 
 int main() {
+	
+	SuffixTree st("aeiou");
 	return 0;
 }
