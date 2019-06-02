@@ -7,17 +7,47 @@ class SuffixTree(){
 	public:
 
 		SuffixTree() {}	 //constructor
-		// here, we have to load (or deserialize) the SuffixTree
+		                 // here, we have to load (or deserialize) the SuffixTree
 	
 	private:
 		
-		void search(string key, int *&p){}   //search pattern in the text
-											 //for now, *p is a pointer for the first page
-	
+		void search(string key, int *&p){         //search pattern in the text, for now, *p is a pointer for the first page
+		
+			Node* pAux2 = pRoot;	
+		    //string word_aux = "english historian";
+		    //word_aux = " " + word_aux + " ";
+		    int p_value = (int)word_aux[0];
+		    string word_test = pAux2 -> alphabet[p_value];
+		
+		    while (word_aux.length() > 0) {
+		    	if (word_test == ""){
+		    		cout << "não encontrei";
+		    		break;
+		    	}
+		
+		    	else if (word_test == word_aux){
+		    		cout<<"encontrei";
+		    		break;
+		    	}
+		
+		    	else if (word_aux == word_test.substr(0,word_aux.length())){
+		    		cout<<"encontrei";
+		    		break;
+		    	}
+		    	
+		    	else if(word_test == word_aux.substr(0,word_test.length())){
+		    		pAux2 = pAux2 -> pChild[p_value];
+		    		p_value = (int)word_aux[word_test.length()];
+		    		word_aux = word_aux.substr(word_test.length(), word_aux.length()+1);
+		    		word_test = pAux2-> alphabet[p_value];
+		    	}
+		    }
+		}  
 };
 
 string get_title(int id){
 	//get the title from some page
+	
 }
 
 void open_page(int id){
@@ -34,15 +64,15 @@ int main(){
 	while(true){
 		cout << "Enter your query: " << endl;
 		getline(cin, query);
-		query = " " + query + " ";
+		query += " ";
 		
-		int *p;
+		int *p;                                                   //I want p to be a vector of integers. Could it be??
 		
 		float time = clock();
 		SuffixTree.search(query, p);
 		time = (clock() - time)/CLOCKS_PER_SEC;
 		
-		cout << "\n.. About " << "Number of results" << " results" << endl;
+		cout << "\n.. About " << len(p) << " results" << endl;     //len(p) is the amount of pages
 		cout << "(" << time << "seconds)" << endl;
 		
 		for(int i=0; i < len(p); i++){
