@@ -1,4 +1,8 @@
 #include <iostream>
+#include <vector>      //to vector
+#include <fstream>    //to files
+#include <string>     //to strings
+#include <locale>    //tolower
 
 using namespace sts;
 
@@ -8,10 +12,14 @@ class SuffixTree(){
 
 		SuffixTree() {}	 //constructor
 		                 // here, we have to load (or deserialize) the SuffixTree
+		                 
+		void search(string key, vector *&p){
+			//do the iniciatlization of a search. Separetes different words			
+		}
 	
 	private:
 		
-		void search(string key, int *&p){         //search pattern in the text, for now, *p is a pointer for the first page
+		void search(string key, vector *&p){         //search pattern in the text, for now, *p is a pointer to a vector
 		
 			Node* pAux2 = pRoot;	
 		    //string word_aux = "english historian";
@@ -45,18 +53,60 @@ class SuffixTree(){
 		}  
 };
 
-string get_title(int id){
+string get_title(fstream fs, int id){
 	//get the title from some page
-	
+	if (fs.is_open()){
+		for (int i = 0;i < id; i++){
+			get_line(fs,line);
+		}
+		get_line(fs,this_line);
+		return this_line;
+	}
+	return "";
 }
 
 void open_page(int id){
-	//open the page 
+	fstream page;
+	page.open("SeparetedPages/"+stoi(id)+".txt", fstream::in);
+	get_line(page,line);
+	cout << line << endl;
+	while (line != "") {
+		get_line(page,line);
+		cout << line << endl;		
+	}
+}
+
+void clean_query(string &query){
+	locale loc;
+	
+	string accented_a = "באדג";
+	string accented_e = "יטך";
+	string accented_i = "םלמ";
+	string accented_o = "ףעפץ";
+	string accented_u = "שתû";
+	string accented_c = "ח";
+	string accented_n = "ס";
+	
+	for (string::size_type i = 0; i<query.length(); i++){
+		tolower(query[i], loc);
+		if accented_a.find(query[i]) query.replace(i,1,"a")
+		else if accented_e.find(query[i]) query.replace(i,1,"e")
+		else if accented_i.find(query[i]) query.replace(i,1,"i")
+		else if accented_o.find(query[i]) query.replace(i,1,"o")
+		else if accented_u.find(query[i]) query.replace(i,1,"u")
+		else if accented_c.find(query[i]) query.replace(i,1,"c")
+		else if accented_n.find(query[i]) query.replace(i,1,"n")	
+	}
+	
+	return;
 }
 
 int main(){
 	
 	SuffixTree tree()
+	
+	fstream titles;
+	titles.open("titles.txt", fstream::in);
 	
 	string answer;
 	int aux = 1;
@@ -64,15 +114,15 @@ int main(){
 	while(true){
 		cout << "Enter your query: " << endl;
 		getline(cin, query);
-		query += " ";
+		clean_query(query)
 		
-		int *p;                                                   //I want p to be a vector of integers. Could it be??
+		vector *p;                                                   //I want p to be a vector of integers. Could it be??
 		
 		float time = clock();
 		SuffixTree.search(query, p);
 		time = (clock() - time)/CLOCKS_PER_SEC;
 		
-		cout << "\n.. About " << len(p) << " results" << endl;     //len(p) is the amount of pages
+		cout << "\n.. About " << (*p).size() << " results" << endl;     //(*p).size() is the amount of pages
 		cout << "(" << time << "seconds)" << endl;
 		
 		for(int i=0; i < len(p); i++){
@@ -100,7 +150,7 @@ int main(){
 				}
 			}
 			if (aux == 0) break;
-			cout << "[" << i+1 << "]" << get_title(p[i]) << endl;
+			cout << "[" << i+1 << "]" << get_title(titles, p[i]) << endl;
 		}
 	}
 	
