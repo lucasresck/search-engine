@@ -1,4 +1,4 @@
-﻿# coding=utf-8
+# coding=utf-8
 
 import os
 import time
@@ -27,8 +27,19 @@ def get_title(string):                  ##function to get title from title lines
     title = string[begin+7:end - 2]
     return title
 
-Titles = list()
-number_file = 0
+h = open("title_ordered.txt")
+string = h.readline()
+titles_ord = dict()
+i = 0
+while string != "":
+    string = string[0:-1]
+    titles_ord[string] = i
+    i += 1
+    string = h.readline()
+h.close()
+
+#Titles = list()
+#number_file = 0
 g = open("titles.txt","w")
 h = open("titles.txt","w")
 t0 = time.time()
@@ -40,12 +51,14 @@ for i in files_names:
         if "<doc id" in string:
             g.close()   #closes the previous file
             h.close()
-            name = "CleanedAux/"+ str(number_file) + ".txt"
-            name2 = "SeparetedAux/"+str(number_file) + ".txt"
 
             #getting title
             string = get_title(string)
-            Titles.append(string)
+            #Titles.append(string)
+            
+            title_id = titles_ord[string]            
+            name = "CleanedPages/"+ str(title_id) + ".txt"
+            name2 = "SeparetedPages/"+str(title_id) + ".txt"
 
             g = open(name, "w")
             h = open(name2, "w")
@@ -53,7 +66,7 @@ for i in files_names:
             h.close()
             g = open(name,"a")
             h = open(name2, "a")
-            number_file += 1
+            #number_file += 1
 
         ##separeting    
 
@@ -75,7 +88,7 @@ for i in files_names:
 g.close()
 h.close()
 
-f = open("titles.txt","a")
-for t in Titles:
-    f.write(t)
-    f.write("\n")
+#f = open("titles.txt","a")
+#for t in Titles:
+#    f.write(t)
+#    f.write("\n")
