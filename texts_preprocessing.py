@@ -1,31 +1,67 @@
-# coding=utf-8
+﻿# coding=utf-8
 
 import os
+import time
 
-files_names = os.listdir("Texts")                           #list the files in the dir. Put the texts in the folder Texts. 
-                                                            #Remember to take off all the not text files.
-							                                #Remember to create a folder in this folder called "Cleaned_texts". 
+files_names = os.listdir("englishTexts")
+
 symbols = {'8', '¼', 'ß', 'f', 'C', '<', 'e', '\\', ',', 'P', '©', '+', 'û', 'Ê', 'î', '6', '¢', 'T', 'F', 'O', '{', 'N', '=', 'Ü', '(', 'g', '¬', 'ë', '´', ':', 'ä', 'Á', 'Ø', 's', 'ê', '&', 'R', '¦', 'S', 'A', '¡', 'h', 'à', 'E', '¹', 'þ', 'w', '^', ';', 'â', '»', '`', 'Û', 'ç', 'X', '±', 'Ö', 'n', '%', 'Ò', '7', '_', '$', 'Ô', 'õ', 'è', '-', 'o', '÷', 'Æ', 'H', 'ñ', 'Ó', 'i', 'º', 'ø', 'ÿ', 'Ð', 'U', 'p', '?', 'å', 'á', 'ú', 'Í', 'Ý', 'W', 'ã', 'j', '/', '·', '\xad', 'Ú', 'Q', '¿', 'Z', 'Â', 'ü', 'ì', '3', '.', 'ù', '¨', '"', 'µ', 'M', 'Y', '#', ')', 'ð', '4', 'í', '×', 'z', 'r', '¤', ' ', 'Ñ', '²', '|', 'Þ', '2', '[', 'Ï', "'", '9', 'ö', 'È', 'Ì', 'm', 'x', '}', 'a', 'Õ', 'Ë', 'Å', '\n', 'ó', '¯', 'D', 'ô', 'Ä', 'd', 'ò', '!', 'Ù', '«', 'l', 'v', '£', '\t', 't', 'u', '~', '¶', 'c', 'I', 'b', '¸', 'K', 'é', 'V', '°', '³', 'Î', 'k', '0', 'y', '§', 'B', '>', 'q', '¥', 'G', '*', 'À', '½', '¾', '1', '\xa0', 'æ', '®', 'É', '5', 'ï', 'Ã', '@', 'Ç', 'J', 'ª', ']', 'L', 'ý'}
-
-wanted_symbols = {'2', 'X', 'C', 'k', 'g', '9', 'c', 'U', '4', 'Ç', '0', 'R', 'û', 'K', 'z', 'Z', 'Ò', 'p', 'Í', 'j', 'Ó', 'N', 'Ã', 'ç', 't', 'ù', 'x', 'ô', 'Ù', 'd', 'q', 'B', 'J', 'm', 'Ê', 'ã', 'e', '8', '%', 'Y', '-', 'I', 'u', 'Ô', 'T', 'h', 'n', '7', 'y', 'r', '&', 'F', 'P', 'Â', 'ú', 'ì', 'Ú', 'ü', 'D', 'ê', 's', 'E', 'O', 'Q', 'l', 'S', 'Ñ', 'L', '6', 'V', 'Õ', 'õ', 'À', 'è', 'ñ', '5', 'i', 'H', '1', 'Ì', 'È', "'", 'É', 'Î', 'í', 'Û', 'á', 'b', 'W', 'v', '3', 'o', 'M', 'â', 'î', 'w', 'f', 'G', 'a', 'é', 'Á', 'ó', 'à', '@', 'A'}
-
+upper = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}
+lower = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'}
+numbers = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
+used_symbols = {'%','&','-','@',"'"}
+accented = {"ô", "Ã", "é", "ã", "â", "É", "Ù", "ñ", "Î", "Ñ", "Ú", "ù", "ü","í", "ì", "î", "Ó", "À", "Á", "È", "à", "Ê", "Ò", "Û", "ç", "Â", "Í","á","ú", "õ", "ó","Õ","ê","Ç","è","Ì","û","Ô"}
+wanted_symbols = upper.union(lower)
+wanted_symbols = wanted_symbols.union(numbers)
+wanted_symbols = wanted_symbols.union(used_symbols)
+wanted_symbols = wanted_symbols.union(accented)
 symbols_out = symbols - wanted_symbols
+accented_list = list(accented)
+accented_list = sorted(accented_list)
+subst_accented = {"ç": "c", 'à':"a", 'á':"a", 'â':"a", 'ã':"a", 'è':"e", 'é':"e", 'ê':"e", 'ì':"i", 'í':"i", 'î':"i", "ñ":"n", 'ó':"o", 'ô':"o", 'õ':"o", 'ù':"u", 'ú':"u", 'û':"u", 'ü':"u"}
 
-subst_accented = {"ç": "c", 'à':"a", 'á':"a", 'â':"a", 'ã':"a", 'è':"e", 'é':"e", 'ê':"e", 'ì':"i", 'í':"i", 'î':"i", "ñ":"n", 'ó':"o", 'ô':"o", 'õ':"o", 'ù':"u", 'ú':"u", 'û':"u", 'ü':"u"}    #dict to change the letters. 
+def get_title(string):                  ##function to get title from title lines
+    begin = string.find("title")
+    end = string.find("nonfiltered")
+    if begin == -1 or end == -1: return None
+    title = string[begin+7:end - 2]
+    return title
 
+Titles = list()
 number_file = 0
-g = open("teste.txt","w")
+g = open("titles.txt","w")
+h = open("titles.txt","w")
+t0 = time.time()
 for i in files_names:
-    f = open("Texts/"+i)
+    print(time.time() - t0)
+    f = open("englishTexts/" + i)
     string = f.readline()
     while string != "":
         if "<doc id" in string:
-            g.close()
-            name = "Cleaned_Texts/"+str(number_file) + ".txt"
+            g.close()   #closes the previous file
+            h.close()
+            name = "CleanedAux/"+ str(number_file) + ".txt"
+            name2 = "SeparetedAux/"+str(number_file) + ".txt"
+
+            #getting title
+            string = get_title(string)
+            Titles.append(string)
+
             g = open(name, "w")
+            h = open(name2, "w")
             g.close()
+            h.close()
             g = open(name,"a")
+            h = open(name2, "a")
             number_file += 1
+
+        ##separeting    
+
+        h.write(string)
+        h.write("\n")
+
+        ##cleaning
+
         string = string.lower()
         for symbol in symbols_out:
             string = string.replace(symbol," ")
@@ -37,3 +73,9 @@ for i in files_names:
         string = f.readline()
     f.close()
 g.close()
+h.close()
+
+f = open("titles.txt","a")
+for t in Titles:
+    f.write(t)
+    f.write("\n")
