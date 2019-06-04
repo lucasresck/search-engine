@@ -104,18 +104,18 @@ class Trie {
 	
 	private:
 		
-            void search_word(string key, vector<int> &p,){
+            void search_word(string key, vector<int> &p,  Node* pInit){
                 
-                Node* pAux2 = pRoot;
+                Node* pAux = pInit;
                 
-                //identifies node in the trie
-                for (int i = 0; i < word.length(); i++) {
-                    pAux2 = pAux2->pChild[int()word[i]];
+                //identifies last node of the word in the trie
+                for (int i = 0; i < key.length(); i++) {
+                    pInit = pInit->pChild[int()key[i]];
                 }
                 
-                //identifies pages in which the searched word exists
-                if (pAux2->documents.size() > 0) {
-                    p.insert(std::end(p), std::begin(pAux2->documents), std::end(pAux2->documents));
+                //identifies pages in which the searched word exists and adds them to our vector p
+                if (pInit->documents.size() > 0) {
+                    p.insert(std::end(p), std::begin(pInit->documents), std::end(pInit->documents));
                 }
             };
 	
