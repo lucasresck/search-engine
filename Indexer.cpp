@@ -7,11 +7,9 @@ using namespace std;
 
 struct Node {
 	vector<int> documents;
-	//string alphabet[128];
 	Node* pChild[128];
 	Node() {
 		for (int i = 0; i < 128; i++) {
-			//alphabet[i] = "";
 			pChild[i] = nullptr;
 		}
 	}
@@ -49,23 +47,46 @@ public:
 			pInit->pChild[(int)word[0]] = new Node;
 		add_word(word.substr(1, word.length() - 1), pInit->pChild[(int)word[0]], doc);
 	}
+	
+	void serialize(Node* pNode, ofstream& serialization) {
+		serialization << "[";
+		for (int doc = 0; doc < pNode->documents.size(); doc++) {
+			serialization << to_string(pNode->documents[doc]);
+			serialization << " ";
+		}
+		serialization << "]";
+		for (int child = 0; child < 128; child++) {
+			if (pNode->pChild[child] != nullptr) {
+				serialization << to_string(child);
+				serialization << " ";
+				serialize(pNode->pChild[child], serialization);
+				serialization << "-";
+			}
+		}				
+	}
 };
 
 int main() {
-	time_t init = time(NULL);
-	time_t now;
+	clock_t t;
+	t = clock();
 	Trie trie;
-	for (int doc = 0; doc < 1359870; doc++) {
-		if (doc % 100 == 0) {
-			now = time(NULL);
-			cout << doc << endl;
-			cout << now - init;
+	float expect;
+	for (int doc = 0; doc < 30000; doc++) {
+		if (doc % 250 == 0) {
+			t = clock() - t;
+			cout << "Document: " + to_string(doc) << endl;
+			cout << ((float)t)/CLOCKS_PER_SEC;
 			cout << " s = ";
-			cout << (now - init) / 60;
-			cout << " min" << endl << endl;
+			cout << ((float)t)/CLOCKS_PER_SEC/60;
+			cout << " min" << endl;
+			if (doc != 0) {
+				expect = 1359870 / doc * ((float)t)/CLOCKS_PER_SEC - ((float)t)/CLOCKS_PER_SEC;
+				cout << "Expected time: " + to_string(expect/60) + " min = " + to_string(expect/3600) + " h" << endl << endl;
+			}
+			else cout << endl;
 		}
 		string page;
-		ifstream file ("Cleaned_Texts/" + to_string(doc) + ".txt");
+		ifstream file ("CleanedAux/" + to_string(doc) + ".txt");
 		if (file.is_open()) {
 			if (file.good()) {
 				getline(file, page);
@@ -73,5 +94,10 @@ int main() {
 			}
 		}
 	}
+
+	ofstream serialization ("Serialization.txt");	
+	trie.serialize(trie.pRoot, serialization);
+	serialization.close();
+	
 	return 0;
 }

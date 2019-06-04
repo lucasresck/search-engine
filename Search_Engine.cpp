@@ -8,24 +8,32 @@ using namespace std;
 
 struct Node {
 	vector<int> documents;
-	//string alphabet[128];
 	Node* pChild[128];
 	Node() {
 		for (int i = 0; i < 128; i++) {
-			//alphabet[i] = "";
 			pChild[i] = nullptr;
 		}
 	}
 };
 
-class SuffixTree{
+class Trie {
 	
 	public:
 		
-		Node *pRoot;
+		Node *pRoot = new Node;
 
-		SuffixTree() {}	 //constructor
-		                 // here, we have to load (or deserialize) the SuffixTree
+		Trie() {
+			cout << "./engine" << endl;
+			ifstream file ("Serialization.txt");			
+			clock_t t = clock();
+			deserialize(file);
+			cout << "... Loading index done with ";
+			t = clock() - t;
+			cout << ((float)t)/CLOCKS_PER_SEC;
+			cout << " s!" << endl << endl;
+			file.close();
+		}	 //constructor
+		                 // here, we have to load (or deserialize) the Trie
 		                 
 		void search(string key, vector<int> &p){
 			//do the iniciatlization of a search. Separetes different words			
@@ -64,7 +72,44 @@ class SuffixTree{
 	//	    		word_test = pAux2->pChild[p_value];
 	//	    	}
 	//	    }
-	//	}  
+	//	} 
+	
+	void deserialize(ifstream& file) {
+		Node* pNode = pRoot;
+		char letter;
+		string doc;
+		string number;
+		vector<Node*> pNodes;
+		while (file.get(letter)) {
+			if (letter == '[') {
+				doc = "";
+				file.get(letter);				
+				while (letter != ']') {
+					if (letter == ' ') {
+						pNode->documents.push_back(stoi(doc));
+						doc = "";
+					}
+					else
+						doc = doc + letter;
+					file.get(letter);					
+				}
+			}
+			else if (letter == '-') {
+				pNode = pNodes.back();
+				pNodes.pop_back();	
+			}
+			else {
+				number = "";
+				while (letter != ' ') {
+					number = number + letter;
+					file.get(letter);
+				}
+				pNodes.push_back(pNode);
+				pNode->pChild[stoi(number)] = new Node;
+				pNode = pNode->pChild[stoi(number)];
+			}
+		}
+	} 
 };
 
 string get_title(fstream &fs, int id){
@@ -121,7 +166,7 @@ void clean_query(string &query){
 
 int main(){
 	
-	SuffixTree tree();
+	Trie trie;	
 	
 	fstream titles;
 	titles.open("title_ordered.txt", fstream::in);
@@ -130,7 +175,7 @@ int main(){
 	int aux = 1;
 	
 	while(true){
-		cout << "Enter your query: " << endl;
+		cout << "Enter your query: ";
 		string query;
 		getline(cin, query);
 		clean_query(query);
@@ -138,11 +183,11 @@ int main(){
 		vector<int> p;                                                   //I want p to be a vector of integers. Could it be??
 		
 		float time = clock();
-		//tree.search(query, p);                                     
+		//trie.search(query, p);                                     
 		time = (clock() - time)/CLOCKS_PER_SEC;
 		
-		cout << "\n.. About " << p.size() << " results" << endl;     
-		cout << "(" << time << "seconds)" << endl;
+		if (p.size() == 0 || p.size() == 1) cout << "\n.. About " << p.size() << " result (" << time << " second)" << endl << endl;
+		else cout << "\n.. About " << p.size() << " results (" << time << " seconds)" << endl << endl;
 		
 		for(int i=0; i < p.size(); i++){
 			if (i > 0 && i %20 == 0){
