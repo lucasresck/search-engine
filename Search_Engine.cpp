@@ -82,9 +82,11 @@ class Trie {
                 word = key.substr(0,key.length());
                 search_word(word,p)
             }
-
             
             //identifies pages in which all of our words appear (in case there is more than one word in the query)
+            
+            vector<int> aux;
+            
             if (count > 0) {
                 std::map<int, int> countMap;
                 
