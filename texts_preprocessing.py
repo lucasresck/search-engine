@@ -27,23 +27,25 @@ def get_title(string):                  ##function to get title from title lines
     title = string[begin+7:end - 2]
     return title
 
-h = open("title_ordered.txt")
+h = open("titles_ordered.txt")
 string = h.readline()
 titles_ord = dict()
 i = 0
 while string != "":
     string = string[0:-1]
-    titles_ord[string] = i
+    try:
+        titles_ord[string].append(i)
+    except:
+        titles_ord[string] = [i]
     i += 1
     string = h.readline()
 h.close()
 
-#Titles = list()
-#number_file = 0
-g = open("titles.txt","w")
-h = open("titles.txt","w")
+g = open("titles_ordered.txt")
+h = open("titles_ordered.txt")
 t0 = time.time()
 for i in files_names:
+    print(i)
     print(time.time() - t0)
     f = open("englishTexts/" + i)
     string = f.readline()
@@ -56,7 +58,9 @@ for i in files_names:
             string = get_title(string)
             #Titles.append(string)
             
-            title_id = titles_ord[string]            
+            title_id = (titles_ord[string])[0]
+            titles_ord[string].pop(0)
+            
             name = "CleanedPages/"+ str(title_id) + ".txt"
             name2 = "SeparetedPages/"+str(title_id) + ".txt"
 
@@ -66,7 +70,6 @@ for i in files_names:
             h.close()
             g = open(name,"a")
             h = open(name2, "a")
-            #number_file += 1
 
         ##separeting    
 
@@ -87,8 +90,3 @@ for i in files_names:
     f.close()
 g.close()
 h.close()
-
-#f = open("titles.txt","a")
-#for t in Titles:
-#    f.write(t)
-#    f.write("\n")
