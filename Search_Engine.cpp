@@ -37,42 +37,66 @@ class Trie {
 		                 
 		void search(string key, vector<int> &p){
 			//do the iniciatlization of a search. Separetes different words			
-		}
+            
+            vector<string> words;
+            int position = 0;
+            int i = 1;
+            string word;
+            
+            while (position+i < letters.size()){
+                if (letters[position+i] == letters[position] + i){
+                    if (position + i == letters.size() - 1){
+                        word = query.substr(letters[position],i+1);
+                        words.push_back(word);
+                        break;
+                    }
+                    else {
+                        i = i + 1;
+                    }
+                }
+                else {
+                    word = query.substr(letters[position],i+1);
+                    words.push_back(word);
+                    position = position + i;
+                    i = 1;
+                }
+            }
+            
+            
+            for (int i = 0; i < words.size(); i++){
+                word = words[i]
+                search(words,p)
+            }
+            
+            if (words.size() > 1) {
+                std::map<int, int> countMap;
+                
+                for (auto & elem : p){
+                    auto result = countMap.insert(std::pair<int, int>(elem, 1));
+                    if (result.second == false)
+                        result.first->second++;}
+                
+                for (auto & elem : countMap){
+                    if (elem.second > 2)
+                        aux.push_back(elem.first);
+                }
+                
+                p = aux;
+                
+            }
 	
 	private:
 		
-	//	void search(string key, vector<int> &p){         //search pattern in the text, for now, *p is a pointer to a vector
-		
-	//		Node* pAux2 = pRoot;	                    //pRoot should be told in the inicialization
-	//	    //string word_aux = "english historian";
-	//	    string word_aux = key;
-	//	    int p_value = (int)word_aux[0];
-	//	    string word_test = pAux2->pChild[p_value];
-	//	
-	//	    while (word_aux.length() > 0) {
-	//	    	if (word_test == ""){
-	//	    		cout << "não encontrei";
-	//	    		break;
-	//	    	}
-	//	
-	//	    	else if (word_test == word_aux){
-	//	    		cout<<"encontrei";
-	//	    		break;
-	//	    	}
-	//	
-	//	    	else if (word_aux == word_test.substr(0,word_aux.length())){
-	//	    		cout<<"encontrei";
-	//	    		break;
-	//	    	}
-	//	    	
-	//	    	else if(word_test == word_aux.substr(0,word_test.length())){
-	//	    		pAux2 = pAux2 -> pChild[p_value];
-	//	    		p_value = (int)word_aux[word_test.length()];
-	//	    		word_aux = word_aux.substr(word_test.length(), word_aux.length()+1);
-	//	    		word_test = pAux2->pChild[p_value];
-	//	    	}
-	//	    }
-	//	} 
+            void search(string key, vector<int> &p){         //search pattern in the text, for now, *p           Node* pAux2 = pRoot;
+                
+                for (int i = 0; i < word.length(); i++) {
+                    pAux2 = pAux2->pChild[int()word[i]];
+                }
+                
+                if (pAux2->documents.size() > 0) {
+                    p.insert(std::end(p), std::begin(pAux2->documents), std::end(pAux2->documents));
+                }
+            };
 	
 	void deserialize(ifstream& file) {
 		Node* pNode = pRoot;
