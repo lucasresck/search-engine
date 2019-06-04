@@ -41,9 +41,9 @@ while string != "":
     string = h.readline()
 h.close()
 
-g = open("titles_ordered.txt")
 h = open("titles_ordered.txt")
 t0 = time.time()
+j = 0
 for i in files_names:
     print(i)
     print(time.time() - t0)
@@ -51,8 +51,9 @@ for i in files_names:
     string = f.readline()
     while string != "":
         if "<doc id" in string:
-            g.close()   #closes the previous file
-            h.close()
+            j+=1
+            if j%100==0: print(time.time() - t0)
+            h.close()             #closes the previous file
 
             #getting title
             string = get_title(string)
@@ -61,32 +62,42 @@ for i in files_names:
             title_id = (titles_ord[string])[0]
             titles_ord[string].pop(0)
             
-            name = "CleanedPages/"+ str(title_id) + ".txt"
-            name2 = "SeparetedPages/"+str(title_id) + ".txt"
+            name = "SeparetedPages/"+str(title_id) + ".txt"
 
-            g = open(name, "w")
-            h = open(name2, "w")
-            g.close()
-            h.close()
-            g = open(name,"a")
-            h = open(name2, "a")
+            h = open(name, "w")
 
         ##separeting    
-
         h.write(string)
         h.write("\n")
+        string = f.readline()
+        
+    f.close()
+h.close()
 
+pages_ids = os.listdir("SeparetedPages")
+print("Now, cleaning")
+
+name = 0
+g = open("CleanedPages" + str(name) + ".txt","w")
+
+for i in range(len(pages_ids)):
+    if i%1000 == 0: print(time.time() - t0)
+    if i%10000 == 0 and i > 0: 
+        g.close()
+        name+=1
+        g = open("CleanedPages"+str(name)+".txt","w")
+    h = open("SeparetedPages/"+str(i)+".txt")
+    string = h.readline()
+    while string != "":  
         ##cleaning
-
         string = string.lower()
         for symbol in symbols_out:
             string = string.replace(symbol," ")
         for symbol in subst_accented.keys():
             string = string.replace(symbol, subst_accented[symbol])
-        if "endofarticle" not in string:
-            g.write(string)
-            g.write(" ")
-        string = f.readline()
-    f.close()
+        g.write(string)
+        g.write(" ")
+        string = h.readline()
+    g.write("\n")
+    h.close()
 g.close()
-h.close()
