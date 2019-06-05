@@ -57,7 +57,7 @@ public:
 		}
 		serialization << "]";
 		for (int child = 0; child < 128; child++) {
-			cout << "Processing words starting with " << child << endl;
+			cout << "Processing words starting with " << (char)child << endl;
 			if (pNode->pChild[child] != nullptr) {
 				serialization << to_string(child);
 				serialization << " ";
@@ -94,8 +94,8 @@ int main() {
 	Trie trie;
 	float expect;
 	int number_page = 0;
-	for (int doc = 0; doc < 5; doc++) {
-		if (doc % 10 == 0) {
+	for (int doc = 0; doc < 90; doc++) {
+		if (doc % 5 == 0) {
 			t = clock() - t0;
 			cout << "Document: " + to_string(doc) << endl;
 			cout << ((float)t)/CLOCKS_PER_SEC;
@@ -107,13 +107,14 @@ int main() {
 		ifstream file ("CleanedPages/" + to_string(doc) + ".txt");
 		if (file.is_open()) {
 			if (file.good()) {
-				while(getline(file, page))
+				while(getline(file, page)) {
 					trie.add_page(page, number_page);
-					number_page+=1;
+					number_page++;
+				}
 			}
 		}
 		file.close();
-		number_page-=1;
+		number_page--;
 	}
 
 	ofstream serialization ("Serialization.txt");	
