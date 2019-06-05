@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
+
+\title{Search Engine}
+\author{Alessandra Cid, Lucas Emanuel Resck  
+and Lucas Moschen}
+\date{June 2019}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+For this project our group developed a search engine that searches for a word, or multiple words, in the English portion of the Wikipedia corpus. In order to do that, we constructed a trie in C++ to use as our data structure. We used Python to pre-process the corpus and then inserted it into the trie. Our search is also done in C++. If we have more than one word, we compare the pages that are common to all words and only return them. 
+\end{abstract}
+
+\section*{Relevant references}
+% Link to a github repository where your source code is located. They will have to create a TAG with the following name "FINAL". I will verify that the date of creation of the tag is ​x otherwise it will not grade your work. Moreover, this repository should have a README, where it clearly explains how to run your program, datasets, etc. If I can't run your program, then it won't be evaluated either. Those instructions should also be in this document.
+This is the link to the group's Github repository containing all of the project's 
+source code: . In order to run the program you should...
+
+%Link to a video explaining your whole project and showing me how it works. You can take inspiration from the following ​video​.
+This is the link to the group's video: . 
+
+\section*{Description}
+The first step in the project was to pre-process, in Python, the data from Wikipedia that was going to be inserted into the data structure.  Symbols such as ``+'', ``\{'' and ``ß'' were removed from the data, but all of the numbers and the symbols ``\%'', ``\&'', ``-'', ``@'' and `` ' '' were maintained. All of the accents from the words that had them were also removed and the letters in upper case were transformed into lower case. 
+%What did you do? What data structure did you use? Did you do any pre-processing?
+
+\section*{Results}
+% How long does the indexing take? How many documents did you index? How much space did you use? How long does the consultation take? Make some graphs showing the results.
+
+\section*{Limitations}
+\section*{Future work}
+\section*{Conclusion}
+\section*{Distribution of work in the group}
+%Distribution of work: Indicate clearly which parts of the work were done by each of the members of the group.
+\end{document}
