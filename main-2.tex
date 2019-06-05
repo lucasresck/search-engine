@@ -26,7 +26,13 @@ This is the link to the group's video: .
 \section*{Description}
 The Wikipedia corpus used in this project was downloaded as several different text files. Each file contained one or more Wikipedia pages. The first step in the project was to pre-process, in Python, this data. Non ascii symbols, such as ``+'', ``\{'' and ``ß'', were removed, but all of the numbers and the symbols ``\%'', ``\&'', ``-'', ``@'' and `` ' '' were maintained. All of the accents from the words that had them were also removed and the letters in upper case were transformed into lower case. 
 
-The way the different Wikipedia pages were stored in each text file was also changed. Taking advantage of the ``<doc id'' tag identifying the begging of each page, we separated them into indivdual text files name. These files 
+The way the different Wikipedia pages were stored in each text file was also changed. Taking advantage of the ``<doc id'' tag identifying the begging of each page, we separated them into indivdual text files. 
+
+For the data structure, the group chose to build a trie. A trie is a tree that stores different words. Each letter of a word in the trie is the child of the letter that came before it in the word. In C++, this trie was constructed using pointers. Each pointer has 128 potential "child" pointers correspondig to a specific ascii character. If a person wants to verify if a specific word is in the trie, they can start from the root of the trie (pRoot) and visit the child (pChild) corresponding to the ascii character of each of the letters in the word. If they were able to reach the node corresponding to the last letter in the word, it means that in at least some Wikipedia page that word exists. Acessing the vector documents from that point allows the person to see in which Wikipedia pages that word exists.
+
+
+
+
 
 %What did you do? What data structure did you use? Did you do any pre-processing?
 
