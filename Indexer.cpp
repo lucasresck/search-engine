@@ -83,35 +83,31 @@ public:
 };
 
 int main() {
-//	clock_t t0, t;
-//	t0 = clock();
+	clock_t t0, t;
+	t0 = clock();
 	Trie trie;
-//	int number_page = 0;
-//	for (int doc = 0; doc < 90; doc++) {
-//		if (doc % 5 == 0) {
-//			t = clock() - t0;
-//			cout << "Document: " + to_string(doc) << endl;
-//			cout << ((float)t)/CLOCKS_PER_SEC;
-//			cout << " s = ";
-//			cout << ((float)t)/CLOCKS_PER_SEC/60;
-//			cout << " min" << endl << endl;
-//		}
-//		string page;
-//		ifstream file ("CleanedPages/" + to_string(doc) + ".txt");
-//		if (file.is_open()) {
-//			if (file.good()) {
-//				while(getline(file, page)) {
-//					trie.add_page(page, number_page);
-//					number_page++;
-//				}
-//			}
-//		}
-//		file.close();
-//		number_page--;
-//	}
-
-	trie.add_page("aa aba b ca", 4);	
-	trie.add_page("ca cb cc cd", 5);
+	int number_page = 0;
+	for (int doc = 0; doc < 136; doc++) {
+		if (doc % 5 == 0) {
+			t = clock() - t0;
+			cout << "Document: " + to_string(doc) << endl;
+			cout << ((float)t)/CLOCKS_PER_SEC;
+			cout << " s = ";
+			cout << ((float)t)/CLOCKS_PER_SEC/60;
+			cout << " min" << endl << endl;
+		}
+		string page;
+		ifstream file ("CleanedPages/" + to_string(doc) + ".txt");
+		if (file.is_open()) {
+			if (file.good()) {
+				while(getline(file, page)) {
+					trie.add_page(page, number_page);
+					number_page++;
+				}
+			}
+		}
+		file.close();
+	}
 
 	ofstream serialization ("Serialization.txt");
 	trie.serialize(serialization);
