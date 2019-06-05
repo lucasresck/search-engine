@@ -48,6 +48,27 @@ public:
 		add_word(word.substr(1, word.length() - 1), pInit->pChild[(int)word[0]], doc);
 	}
 	
+	void serialize(ofstream& serialization) {
+		Node* pNode = pRoot;
+		serialization << "[";
+		for (int doc = 0; doc < pNode->documents.size(); doc++) {
+			serialization << to_string(pNode->documents[doc]);
+			serialization << " ";
+		}
+		serialization << "]";
+		for (int child = 0; child < 128; child++) {
+			cout << "Processing words starting with " << child << endl;
+			if (pNode->pChild[child] != nullptr) {
+				serialization << to_string(child);
+				serialization << " ";
+				serialize(pNode->pChild[child], serialization);
+				delete pNode->pChild[child];
+				serialization << "-";
+			}
+			else cout << "Nothing" << endl;
+		}				
+	}
+	
 	void serialize(Node* pNode, ofstream& serialization) {
 		serialization << "[";
 		for (int doc = 0; doc < pNode->documents.size(); doc++) {
@@ -60,6 +81,7 @@ public:
 				serialization << to_string(child);
 				serialization << " ";
 				serialize(pNode->pChild[child], serialization);
+				delete pNode->pChild[child];
 				serialization << "-";
 			}
 		}				
@@ -67,36 +89,32 @@ public:
 };
 
 int main() {
-	clock_t t;
-	t = clock();
+	clock_t t0, t;
+	t0 = clock();
 	Trie trie;
 	float expect;
-	for (int doc = 0; doc < 30000; doc++) {
-		if (doc % 250 == 0) {
-			t = clock() - t;
+	for (int doc = 0; doc < 1359870; doc++) {
+		if (doc % 2000 == 0) {
+			t = clock() - t0;
 			cout << "Document: " + to_string(doc) << endl;
 			cout << ((float)t)/CLOCKS_PER_SEC;
 			cout << " s = ";
 			cout << ((float)t)/CLOCKS_PER_SEC/60;
-			cout << " min" << endl;
-			if (doc != 0) {
-				expect = 1359870 / doc * ((float)t)/CLOCKS_PER_SEC - ((float)t)/CLOCKS_PER_SEC;
-				cout << "Expected time: " + to_string(expect/60) + " min = " + to_string(expect/3600) + " h" << endl << endl;
-			}
-			else cout << endl;
+			cout << " min" << endl << endl;
 		}
 		string page;
-		ifstream file ("CleanedAux/" + to_string(doc) + ".txt");
+		ifstream file ("CleanedPages/" + to_string(doc) + ".txt");
 		if (file.is_open()) {
 			if (file.good()) {
 				getline(file, page);
 				trie.add_page(page, doc);
 			}
 		}
+		file.close();
 	}
 
 	ofstream serialization ("Serialization.txt");	
-	trie.serialize(trie.pRoot, serialization);
+	trie.serialize(serialization);
 	serialization.close();
 	
 	return 0;
