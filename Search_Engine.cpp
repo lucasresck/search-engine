@@ -8,7 +8,7 @@
 using namespace std;
 
 struct Node {
-	vector<int> documents;
+	vector<int> docs;
 	Node* pChild[128];
 	Node() {
 		for (int i = 0; i < 128; i++) {
@@ -25,14 +25,18 @@ class Trie {
 
 		Trie() {
 			cout << "./engine" << endl;
-			ifstream file ("Serialization.txt");			
+			ifstream serialization ("Serialization.txt");
+			ifstream docs ("Docs.txt");			
 			clock_t t = clock();
-			deserialize(file);
+			deserialize(serialization);
+			cout << "Doc: ";
+			for (int i = 0; i < (pRoot->pChild[(int)'c']->pChild[(int)'e']->docs).size(); i++)
+			cout << pRoot->pChild[(int)'c']->pChild[(int)'e']->docs[i] << endl;
 			cout << "... Loading index done with ";
 			t = clock() - t;
 			cout << ((float)t)/CLOCKS_PER_SEC;
 			cout << " s!" << endl << endl;
-			file.close();
+			serialization.close();
 		}
     
     //constructor
@@ -121,40 +125,28 @@ class Trie {
                 }
             };
 	
-	void deserialize(ifstream& file) {
+	void deserialize(ifstream& serialization) {
 		Node* pNode = pRoot;
 		char letter;
-		string doc;
-		string number;
+		string number = "";
 		vector<Node*> pNodes;
-		while (file.get(letter)) {
-			if (letter == '[') {
-				doc = "";
-				file.get(letter);				
-				while (letter != ']') {
-					if (letter == ' ') {
-						pNode->documents.push_back(stoi(doc));
-						doc = "";
-					}
-					else
-						doc = doc + letter;
-					file.get(letter);					
-				}
-			}
-			else if (letter == '-') {
-				pNode = pNodes.back();
-				pNodes.pop_back();	
-			}
-			else {
+		while (serialization.get(letter)) {
+			if (letter == ',') {
+				pNode->docs.push_back(stoi(number));
 				number = "";
-				while (letter != ' ') {
-					number = number + letter;
-					file.get(letter);
-				}
+			}
+			else if (letter == '.') {
 				pNodes.push_back(pNode);
 				pNode->pChild[stoi(number)] = new Node;
 				pNode = pNode->pChild[stoi(number)];
+				number = "";
 			}
+			else if (letter == '-') {
+				pNode = pNodes.back();
+				pNodes.pop_back();
+				number = "";
+			}
+			else number = number + letter;
 		}
 	} 
 
@@ -236,7 +228,7 @@ int main(){
 		vector<int> p;                                                   //I want p to be a vector of integers. Could it be??
 		
 		float time = clock();
-		trie.search(query, p);
+		//trie.search(query, p);
 		time = (clock() - time)/CLOCKS_PER_SEC;
 		
 		if (p.size() == 0 || p.size() == 1) cout << "\n.. About " << p.size() << " result (" << time << " second)" << endl << endl;
@@ -261,14 +253,14 @@ int main(){
 						}
 						break;
 					}else if (stoi(answer) < p.size()){
-						open_page(p[i]);
+						//open_page(p[i]);
 						break;
 					} 
 				}
 			}
 			if (aux == 0) break;
-			string title = get_title(titles,p[i]);
-			cout << "[" << i+1 << "]" << get_title(titles, p[i]) << endl;
+			//string title = get_title(titles,p[i]);
+			//cout << "[" << i+1 << "]" << get_title(titles, p[i]) << endl;
 		}
 	}
 	
