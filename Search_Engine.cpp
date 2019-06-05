@@ -116,8 +116,8 @@ private:
 		}
 		
 		//identifies pages in which the searched word exists and adds them to our vector p
-		if (pInit->docs.size() > 0) {
-			p.insert(std::end(p), std::begin(pInit->docs), std::end(pInit->docs));
+		if (pInit->documents.size() > 0) {
+			p.insert(std::end(p), std::begin(pInit->documents), std::end(pInit->documents));
 		}
 	}
 
