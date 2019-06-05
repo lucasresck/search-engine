@@ -66,7 +66,7 @@ for i in files_names:
 
             h = open(name, "w")
 
-        ##separeting    
+        ##separating
         h.write(string)
         h.write("\n")
         string = f.readline()
