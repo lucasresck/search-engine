@@ -24,9 +24,10 @@ source code: . In order to run the program you should...
 This is the link to the group's video: . 
 
 \section*{Description}
-The first step in the project was to pre-process, in Python, the data from Wikipedia that was going to be inserted into the data structure.  Symbols such as ``+'', ``\{'' and ``ß'' were removed from the data, but all of the numbers and the symbols ``\%'', ``\&'', ``-'', ``@'' and `` ' '' were maintained. All of the accents from the words that had them were also removed and the letters in upper case were transformed into lower case. 
+The Wikipedia corpus used in this project was downloaded as several different text files. Each file contained one or more Wikipedia pages. The first step in the project was to pre-process, in Python, this data. Non ascii symbols, such as ``+'', ``\{'' and ``ß'', were removed, but all of the numbers and the symbols ``\%'', ``\&'', ``-'', ``@'' and `` ' '' were maintained. All of the accents from the words that had them were also removed and the letters in upper case were transformed into lower case. 
 
-The structure of the files was also changed. 
+The way the different Wikipedia pages were stored in each text file was also changed. Taking advantage of the ``<doc id'' tag identifying the begging of each page, we separated them into indivdual text files name. These files 
+
 %What did you do? What data structure did you use? Did you do any pre-processing?
 
 \section*{Results}
