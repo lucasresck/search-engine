@@ -27,68 +27,77 @@ def get_title(string):                  ##function to get title from title lines
     title = string[begin+7:end - 2]
     return title
 
-h = open("title_ordered.txt")
+h = open("titles_ordered.txt")
 string = h.readline()
 titles_ord = dict()
 i = 0
 while string != "":
     string = string[0:-1]
-    titles_ord[string] = i
+    try:
+        titles_ord[string].append(i)
+    except:
+        titles_ord[string] = [i]
     i += 1
     string = h.readline()
 h.close()
 
-#Titles = list()
-#number_file = 0
-g = open("titles.txt","w")
-h = open("titles.txt","w")
+h = open("titles_ordered.txt")
 t0 = time.time()
+j = 0
 for i in files_names:
+    print(i)
     print(time.time() - t0)
     f = open("englishTexts/" + i)
     string = f.readline()
     while string != "":
         if "<doc id" in string:
-            g.close()   #closes the previous file
-            h.close()
+            j+=1
+            if j%100==0: print(time.time() - t0)
+            h.close()             #closes the previous file
 
             #getting title
             string = get_title(string)
             #Titles.append(string)
             
-            title_id = titles_ord[string]            
-            name = "CleanedPages/"+ str(title_id) + ".txt"
-            name2 = "SeparetedPages/"+str(title_id) + ".txt"
+            title_id = (titles_ord[string])[0]
+            titles_ord[string].pop(0)
+            
+            name = "SeparetedPages/"+str(title_id) + ".txt"
 
-            g = open(name, "w")
-            h = open(name2, "w")
-            g.close()
-            h.close()
-            g = open(name,"a")
-            h = open(name2, "a")
-            #number_file += 1
+            h = open(name, "w")
 
         ##separeting    
-
         h.write(string)
         h.write("\n")
+        string = f.readline()
+        
+    f.close()
+h.close()
 
+pages_ids = os.listdir("SeparetedPages")
+print("Now, cleaning")
+
+name = 0
+g = open("CleanedPages" + str(name) + ".txt","w")
+
+for i in range(len(pages_ids)):
+    if i%1000 == 0: print(time.time() - t0)
+    if i%10000 == 0 and i > 0: 
+        g.close()
+        name+=1
+        g = open("CleanedPages"+str(name)+".txt","w")
+    h = open("SeparetedPages/"+str(i)+".txt")
+    string = h.readline()
+    while string != "":  
         ##cleaning
-
         string = string.lower()
         for symbol in symbols_out:
             string = string.replace(symbol," ")
         for symbol in subst_accented.keys():
             string = string.replace(symbol, subst_accented[symbol])
-        if "endofarticle" not in string:
-            g.write(string)
-            g.write(" ")
-        string = f.readline()
-    f.close()
+        g.write(string)
+        g.write(" ")
+        string = h.readline()
+    g.write("\n")
+    h.close()
 g.close()
-h.close()
-
-#f = open("titles.txt","a")
-#for t in Titles:
-#    f.write(t)
-#    f.write("\n")

@@ -3,6 +3,7 @@
 #include <fstream>    //to files
 #include <string>     //to strings
 #include <locale>    //tolower
+#include <map>
 
 using namespace std;
 
@@ -32,47 +33,93 @@ class Trie {
 			cout << ((float)t)/CLOCKS_PER_SEC;
 			cout << " s!" << endl << endl;
 			file.close();
-		}	 //constructor
-		                 // here, we have to load (or deserialize) the Trie
-		                 
-		void search(string key, vector<int> &p){
-			//do the iniciatlization of a search. Separetes different words			
 		}
+    
+    //constructor
+    //here, we have to load (or deserialize) the Trie
+    
+    
+    //search receives the query (key) and a vector that is going to store the pages with the words searched
+		void search(string key, vector<int> &p){
+        
+            //vector with the location of the spaces in the query
+            //(in case there is more than one word or in case there are extra spaces in the query)
+            vector<int> space_loc;
+            
+            //cleans the query and fills space_loc
+            clean_query(key, space_loc);
+            
+            //word is going to be the word searched
+            string word;
+            
+            //counts how many words we searched
+            int count = 0;
+            
+            //we are now going to identify the words in the query and search for it
+            
+            //if we have more than one word
+            if (space_loc.size() > 0) {
+                
+                //first we search for the first word in the query
+                word = key.substr(0,space_loc[1]);
+                search_word(word,p);
+                
+                //than we go through a loop in space_loc identifyng words in the middle
+                for (int i=0; i < space_loc.size()-1; i++) {
+                    word = key.substr(space_loc[i-1]+1,space_loc[i]-1-space(loc[i-1]));
+                    search_word(word,p)
+                    count = count + 1
+                }
+                
+                //last we search for the last word in the query
+                word = key.substr(space_loc[space_loc.size()-1],query.size()-space_loc[space_loc.size()-1]);
+                search_word(word,p);
+                
+            }
+            
+            //if we only have one word
+            else {
+                word = key.substr(0,key.length());
+                search_word(word,p)
+            }
+            
+            //identifies pages in which all of our words appear (in case there is more than one word in the query)
+            
+            vector<int> aux;
+            
+            if (count > 0) {
+                std::map<int, int> countMap;
+                
+                for (auto & elem : p){
+                    auto result = countMap.insert(std::pair<int, int>(elem, 1));
+                    if (result.second == false)
+                        result.first->second++;}
+                
+                for (auto & elem : countMap){
+                    if (elem.second > count)
+                        aux.push_back(elem.first);
+                }
+                
+                p = aux;
+                
+            }
 	
 	private:
 		
-	//	void search(string key, vector<int> &p){         //search pattern in the text, for now, *p is a pointer to a vector
-		
-	//		Node* pAux2 = pRoot;	                    //pRoot should be told in the inicialization
-	//	    //string word_aux = "english historian";
-	//	    string word_aux = key;
-	//	    int p_value = (int)word_aux[0];
-	//	    string word_test = pAux2->pChild[p_value];
-	//	
-	//	    while (word_aux.length() > 0) {
-	//	    	if (word_test == ""){
-	//	    		cout << "nÃ£o encontrei";
-	//	    		break;
-	//	    	}
-	//	
-	//	    	else if (word_test == word_aux){
-	//	    		cout<<"encontrei";
-	//	    		break;
-	//	    	}
-	//	
-	//	    	else if (word_aux == word_test.substr(0,word_aux.length())){
-	//	    		cout<<"encontrei";
-	//	    		break;
-	//	    	}
-	//	    	
-	//	    	else if(word_test == word_aux.substr(0,word_test.length())){
-	//	    		pAux2 = pAux2 -> pChild[p_value];
-	//	    		p_value = (int)word_aux[word_test.length()];
-	//	    		word_aux = word_aux.substr(word_test.length(), word_aux.length()+1);
-	//	    		word_test = pAux2->pChild[p_value];
-	//	    	}
-	//	    }
-	//	} 
+            void search_word(string key, vector<int> &p,  Node* pInit){
+                
+                Node* pAux = pInit;
+                
+                //identifies last node of the word in the trie
+                for (int i = 0; i < key.length(); i++) {
+                    pInit = pInit->pChild[int()key[i]];
+                }
+                
+                //identifies pages in which the searched word exists and adds them to our vector p
+                if (pInit->documents.size() > 0) {
+                    p.insert(std::end(p), std::begin(pInit->documents), std::end(pInit->documents));
+                }
+            };
 	
 	void deserialize(ifstream& file) {
 		Node* pNode = pRoot;
@@ -110,7 +157,38 @@ class Trie {
 			}
 		}
 	} 
-};
+
+            void clean_query(string &query, vector<int> &space_loc;){
+                locale loc;
+                
+                string accented_a = "באדג";
+                string accented_e = "יטך";
+                string accented_i = "םלמ";
+                string accented_o = "ףעפץ";
+                string accented_u = "שתû";
+                string accented_c = "ח";
+                string accented_n = "ס";
+                
+                for (string::size_type i = 0; i<query.length(); i++){
+                    
+                    string ch = query[i];
+                    if (ch == " "){
+                        space_loc.push_back(i);
+                    }
+                    
+                    tolower(query[i], loc);
+                    if (accented_a.find(query[i])) query.replace(i,1,"a");
+                    else if (accented_e.find(query[i])) query.replace(i,1,"e");
+                    else if (accented_i.find(query[i])) query.replace(i,1,"i");
+                    else if (accented_o.find(query[i])) query.replace(i,1,"o");
+                    else if (accented_u.find(query[i])) query.replace(i,1,"u");
+                    else if (accented_c.find(query[i])) query.replace(i,1,"c");
+                    else if (accented_n.find(query[i])) query.replace(i,1,"n");
+                }
+                
+                return;
+            }
+        };
 
 string get_title(fstream &fs, int id){
 	//get the title from some page
@@ -139,31 +217,6 @@ void open_page(int id){
 	}
 }
 
-void clean_query(string &query){
-	locale loc;
-	
-	string accented_a = "באדג";
-	string accented_e = "יטך";
-	string accented_i = "םלמ";
-	string accented_o = "ףעפץ";
-	string accented_u = "שתû";
-	string accented_c = "ח";
-	string accented_n = "ס";
-	
-	for (string::size_type i = 0; i<query.length(); i++){
-		tolower(query[i], loc);
-		if (accented_a.find(query[i])) query.replace(i,1,"a");
-		else if (accented_e.find(query[i])) query.replace(i,1,"e");
-		else if (accented_i.find(query[i])) query.replace(i,1,"i");
-		else if (accented_o.find(query[i])) query.replace(i,1,"o");
-		else if (accented_u.find(query[i])) query.replace(i,1,"u");
-		else if (accented_c.find(query[i])) query.replace(i,1,"c");
-		else if (accented_n.find(query[i])) query.replace(i,1,"n");	
-	}
-	
-	return;
-}
-
 int main(){
 	
 	Trie trie;	
@@ -178,12 +231,12 @@ int main(){
 		cout << "Enter your query: ";
 		string query;
 		getline(cin, query);
-		clean_query(query);
+		//clean_query(query);
 		
 		vector<int> p;                                                   //I want p to be a vector of integers. Could it be??
 		
 		float time = clock();
-		//trie.search(query, p);                                     
+		trie.search(query, p);
 		time = (clock() - time)/CLOCKS_PER_SEC;
 		
 		if (p.size() == 0 || p.size() == 1) cout << "\n.. About " << p.size() << " result (" << time << " second)" << endl << endl;
