@@ -126,6 +126,7 @@ private:
 		char letter;
 		string number = "";
 		vector<Node*> pNodes;
+		int loading = 1;
 		while (serialization.get(letter)) {
 			if (letter == ',') {
 				pNode->docs.push_back(stoi(number));
@@ -139,6 +140,10 @@ private:
 			}
 			else if (letter == '-') {
 				pNode = pNodes.back();
+				if (pNode == pRoot) {
+					loading++;
+					cout << "\r" << loading/128 << "% completed.       " << flush;
+				}
 				pNodes.pop_back();
 				number = "";
 			}
