@@ -93,8 +93,9 @@ int main() {
 	t0 = clock();
 	Trie trie;
 	float expect;
-	for (int doc = 0; doc < 1359870; doc++) {
-		if (doc % 2000 == 0) {
+	int number_page = 0;
+	for (int doc = 0; doc < 5; doc++) {
+		if (doc % 10 == 0) {
 			t = clock() - t0;
 			cout << "Document: " + to_string(doc) << endl;
 			cout << ((float)t)/CLOCKS_PER_SEC;
@@ -107,10 +108,12 @@ int main() {
 		if (file.is_open()) {
 			if (file.good()) {
 				while(getline(file, page))
-					trie.add_page(page, doc);
+					trie.add_page(page, number_page);
+					number_page+=1;
 			}
 		}
 		file.close();
+		number_page-=1;
 	}
 
 	ofstream serialization ("Serialization.txt");	
