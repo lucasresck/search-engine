@@ -106,13 +106,13 @@ class Trie {
 	
 	private:
 		
-            void search_word(string key, vector<int> &p,  Node* pInit){
+            void search_word(string key, vector<int> &p){
                 
-                Node* pAux = pInit;
+                Node* pInit = pRoot;
                 
                 //identifies last node of the word in the trie
                 for (int i = 0; i < key.length(); i++) {
-                    pInit = pInit->pChild[int()key[i]];
+                    pInit = pInit->pChild[(int)key[i]];
                 }
                 
                 //identifies pages in which the searched word exists and adds them to our vector p
