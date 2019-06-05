@@ -106,8 +106,8 @@ int main() {
 		ifstream file ("CleanedPages/" + to_string(doc) + ".txt");
 		if (file.is_open()) {
 			if (file.good()) {
-				getline(file, page);
-				trie.add_page(page, doc);
+				while(getline(file, page))
+					trie.add_page(page, doc);
 			}
 		}
 		file.close();
