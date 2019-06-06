@@ -26,7 +26,6 @@ public:
 	Trie() {
 		cout << "Iniciating ..." << endl;
 		ifstream serialization ("Serialization.txt");
-		ifstream docs ("Docs.txt");			
 		clock_t t = clock();
 		deserialize(serialization);
 		cout << "... Loading index done with ";
@@ -35,73 +34,41 @@ public:
 		cout << " s!" << endl << endl;
 		serialization.close();
 	}
-
-//constructor
-//here, we have to load (or deserialize) the Trie
-
-
-//search receives the query (key) and a vector that is going to store the pages with the words searched
-	void search(string key, vector<int> &p){
 	
-		//vector with the location of the spaces in the query
-		//(in case there is more than one word or in case there are extra spaces in the query)
+	void search(string key, vector<int> &p){
 		vector<int> space_loc;
-		
-		//cleans the query and fills space_loc
 		clean_query(key, space_loc);
 		
-		//word is going to be the word searched
 		string word;
 		
-		//counts how many words we searched
 		int count = 0;
 		
-		//we are now going to identify the words in the query and search for it
-		
-		//if we have more than one word
-		if (space_loc.size() > 0) {
+		/if (space_loc.size() > 0) {
 			
 			//first we search for the first word in the query
-			word = key.substr(0,space_loc[1]);
+			word = key.substr(0,space_loc[0]);
 			search_word(word,p);
 			
 			//than we go through a loop in space_loc identifyng words in the middle
 			for (int i=0; i < space_loc.size()-1; i++) {
-				word = key.substr(space_loc[i-1]+1,space_loc[i]-1-space_loc[i-1]);
-				search_word(word,p);
+				word = key.substr(space_loc[i]+1, space_loc[i+1]-1-space_loc[i]);
+				vector<int> p_aux;
+				search_word(word,p_aux);
+				p = intersection(p, p_aux);
 				count = count + 1;
 			}
 			
 			//last we search for the last word in the query
-			word = key.substr(space_loc[space_loc.size()-1], key.size()-space_loc[space_loc.size()-1]);
-			search_word(word,p);
+			word = key.substr(space_loc[space_loc.size()-1] + 1, key.size()-space_loc[space_loc.size()-1]);
+			vector<int> p_aux;
+			search_word(word,p_aux);
+			p = intersection(p, p_aux);
 			
 		}//if we only have one word
 		else {
 			//word = key.substr(0,key.length());
 			search_word(key,p);
 			return;
-		}
-		
-		//identifies pages in which all of our words appear (in case there is more than one word in the query)
-		
-		vector<int> aux;
-		
-		if (count > 0) {
-			std::map<int, int> countMap;
-			
-			for (auto & elem : p){
-				auto result = countMap.insert(std::pair<int, int>(elem, 1));
-				if (result.second == false)
-					result.first->second++;}
-			
-			for (auto & elem : countMap){
-				if (elem.second > count)
-					aux.push_back(elem.first);
-			}
-			
-			p = aux;
-			
 		}
 	}
 
@@ -123,6 +90,7 @@ private:
 		//identifies pages in which the searched word exists and adds them to our vector p
 		if (j == 0){
 			p = pInit->docs;
+			
 		}
 	}
 
@@ -169,11 +137,10 @@ private:
 		string accented_c = "ç";
 		string accented_n = "ñ";
 	
-		for (string::size_type i = 0; i < query.length(); i++){
+		for (int i = 0; i < query.length(); i++){
 
-			if (query[i] == ' '){
+			if (query[i] == ' ')
 				space_loc.push_back(i);
-			}
 		
 			tolower(query[i], loc);
 			if (accented_a.find(query[i])) query.replace(i,1,"a");
@@ -194,11 +161,13 @@ string get_title(fstream &fs, int id){
 	string line;
 	string this_line;
 	if (fs.is_open()){
-		for (int i = 0;i < id; i++){
-			getline(fs, line);
+		if (fs.good()) {
+			for (int i = 0;i < id; i++){
+				getline(fs, line);
+			}
+			getline(fs,this_line);
+			return this_line;
 		}
-		getline(fs,this_line);
-		return this_line;
 	}
 	return "";
 }
@@ -208,8 +177,6 @@ void open_page(int id){
 	string line;
 	string str_id = to_string(id);
 	page.open("SeparetedPages/"+ str_id +".txt", fstream::in);
-	getline(page,line);
-	cout << line << endl;
 	while (getline(page,line)) {
 		cout << line << endl;		
 	}
@@ -218,13 +185,6 @@ void open_page(int id){
 int main(){
 	
 	Trie trie;
-    
-	//for (int i = 0; i < 1000000;i++){
-	//
-	//	int x = trie.pRoot->pChild[(int)'l']->pChild[(int)'e']->pChild[(int)'t']->pChild[(int)'t']->pChild[(int)'e']->pChild[(int)'r']->docs[i];
-	//	if (x > 8000 && x < 20000) cout << x << endl;
-	//	else if (x >= 20000) break;
-	//}
 	
 	fstream titles;
 	titles.open("titles_ordered.txt", fstream::in);
@@ -253,7 +213,7 @@ int main(){
 					cin >> answer;
 					if (answer == "n"){
 						while(true){				
-							cout << "Show more 20 results[y or n]" << endl;
+							cout << "Show more 20 results [y or n]?" << endl;
 							cin >> answer;
 							if (answer == "n"){
 								aux = 0;
@@ -269,6 +229,7 @@ int main(){
 						open_page(p[i]);
 						break;
 					} 
+					else cout << "Big number. Please, try again." << endl;
 				}
 			}
 			if (aux == 0) break;
