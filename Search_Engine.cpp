@@ -76,22 +76,40 @@ private:
 	void search_word(string key, vector<int> &p){
 		
 		Node* pInit = pRoot;
-		int j = 0;
+		Node* pParent;
+		//int j = 0;
         
 		//identifies last node of the word in the trie
 		for (int i = 0; i < key.length(); i++) {
+			pParent = pInit;
 			pInit = pInit->pChild[(int)key[i]];
             if (pInit == nullptr){
-                j = 1;
+            	Node* chosen_one = pParent;
+            	int size = (pParent->docs).size()
+                suggestion(pParent, size, chosen_one);
+                pInit = pParent;
                 break;
             }
 		}
 		
 		//identifies pages in which the searched word exists and adds them to our vector p
-		if (j == 0){
-			p = pInit->docs;
+		//if (j == 0){
+		p = pInit->docs;
 			
 		}
+	}
+	
+	void suggestion(Node* p, int &len, Node* &chosen_one){
+		for (int i = 0; i < 128; i++){
+			if (p->pChild[i]) {
+				if ((p->pChild[i]->docs).size() > len){
+					chosen_one = p->pChild[i];
+					len = (chosen_one->docs).size();
+				}
+				suggestion(p->pChild[i], len, chosen_one);
+			}
+		}
+		return;
 	}
 
 	void deserialize(ifstream& serialization) {
