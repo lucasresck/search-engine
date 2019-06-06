@@ -78,8 +78,9 @@ public:
 			
 		}//if we only have one word
 		else {
-			word = key.substr(0,key.length());
-			search_word(word,p);
+			//word = key.substr(0,key.length());
+			search_word(key,p);
+			return;
 		}
 		
 		//identifies pages in which all of our words appear (in case there is more than one word in the query)
@@ -109,15 +110,19 @@ private:
 	void search_word(string key, vector<int> &p){
 		
 		Node* pInit = pRoot;
-		
+		int j = 0;
+        
 		//identifies last node of the word in the trie
 		for (int i = 0; i < key.length(); i++) {
 			pInit = pInit->pChild[(int)key[i]];
+            if (pInit == nullptr){
+                j = 1;
+                break;
 		}
 		
 		//identifies pages in which the searched word exists and adds them to our vector p
-		if (pInit->docs.size() > 0) {
-			p.insert(std::end(p), std::begin(pInit->docs), std::end(pInit->docs));
+		if (j == 0){
+			p = pInit->docs;
 		}
 	}
 
@@ -151,6 +156,7 @@ private:
 			else number = number + letter;
 		}
 	} 
+
 
 	void clean_query(string &query, vector<int> &space_loc){
 		locale loc;
@@ -204,30 +210,35 @@ void open_page(int id){
 	page.open("SeparetedPages/"+ str_id +".txt", fstream::in);
 	getline(page,line);
 	cout << line << endl;
-	while (line != "") {
-		getline(page,line);
+	while (getline(page,line)) {
 		cout << line << endl;		
 	}
 }
 
 int main(){
 	
-	Trie trie;	
+	Trie trie;
+    
+	//for (int i = 0; i < 1000000;i++){
+	//
+	//	int x = trie.pRoot->pChild[(int)'l']->pChild[(int)'e']->pChild[(int)'t']->pChild[(int)'t']->pChild[(int)'e']->pChild[(int)'r']->docs[i];
+	//	if (x > 8000 && x < 20000) cout << x << endl;
+	//	else if (x >= 20000) break;
+	//}
 	
 	fstream titles;
-	titles.open("title_ordered.txt", fstream::in);
+	titles.open("titles_ordered.txt", fstream::in);
 	
 	string answer;
 	int aux = 1;
+
+	vector<int> p;
 	
 	while(true){
 		cout << "Enter your query: ";
 		string query;
 		getline(cin, query);
-		//clean_query(query);
-		
-		vector<int> p;                                                   //I want p to be a vector of integers. Could it be??
-		
+
 		float time = clock();
 		trie.search(query, p);
 		time = (clock() - time)/CLOCKS_PER_SEC;
@@ -238,7 +249,7 @@ int main(){
 		for(int i=0; i < p.size(); i++){
 			if (i > 0 && i %20 == 0){
 				while(true){
-					cout << "\nDo you want to open any result[n or result number]?" << endl;
+					cout << "\nDo you want to open any result [n or result number]?" << endl;
 					cin >> answer;
 					if (answer == "n"){
 						while(true){				
@@ -254,6 +265,7 @@ int main(){
 						}
 						break;
 					}else if (stoi(answer) < p.size()){
+						aux = 0;
 						open_page(p[i]);
 						break;
 					} 
@@ -263,6 +275,8 @@ int main(){
 			string title = get_title(titles,p[i]);
 			cout << "[" << i+1 << "]" << title << endl;
 		}
+
+		p.clear();   //restart p
 	}
 	
 	return 0;
