@@ -78,8 +78,9 @@ public:
 			
 		}//if we only have one word
 		else {
-			word = key.substr(0,key.length());
-			search_word(word,p);
+			//word = key.substr(0,key.length());
+			search_word(key,p);
+			return;
 		}
 		
 		//identifies pages in which all of our words appear (in case there is more than one word in the query)
@@ -109,19 +110,19 @@ private:
 	void search_word(string key, vector<int> &p){
 		
 		Node* pInit = pRoot;
-		int i = 0;
+		int j = 0;
         
 		//identifies last node of the word in the trie
 		for (int i = 0; i < key.length(); i++) {
 			pInit = pInit->pChild[(int)key[i]];
             if (pInit == nullptr){
-                i = 1;
+                j = 1;
                 break;
 		}
 		
 		//identifies pages in which the searched word exists and adds them to our vector p
-		if (i == 0){
-			p.insert(std::end(p), std::begin(pInit->documents), std::end(pInit->documents));
+		if (j == 0){
+			p = pInit->docs;
 		}
 	}
 
@@ -217,27 +218,26 @@ int main(){
 	
 	Trie trie;
     
-	for (int i = 0; i < 1000000;i++){
-
-		int x = trie.pRoot->pChild[(int)'l']->pChild[(int)'e']->pChild[(int)'t']->pChild[(int)'t']->pChild[(int)'e']->pChild[(int)'r']->docs[i];
-		if (x > 8000 && x < 20000) cout << x << endl;
-		else if (x >= 20000) break;
-	}
+	//for (int i = 0; i < 1000000;i++){
+	//
+	//	int x = trie.pRoot->pChild[(int)'l']->pChild[(int)'e']->pChild[(int)'t']->pChild[(int)'t']->pChild[(int)'e']->pChild[(int)'r']->docs[i];
+	//	if (x > 8000 && x < 20000) cout << x << endl;
+	//	else if (x >= 20000) break;
+	//}
 	
 	fstream titles;
 	titles.open("titles_ordered.txt", fstream::in);
 	
 	string answer;
 	int aux = 1;
+
+	vector<int> p;
 	
 	while(true){
 		cout << "Enter your query: ";
 		string query;
 		getline(cin, query);
-		//clean_query(query);
-		
-		vector<int> p;                                                   //I want p to be a vector of integers. Could it be??
-		
+
 		float time = clock();
 		trie.search(query, p);
 		time = (clock() - time)/CLOCKS_PER_SEC;
@@ -274,6 +274,8 @@ int main(){
 			string title = get_title(titles,p[i]);
 			cout << "[" << i+1 << "]" << title << endl;
 		}
+
+		p.clear();   //restart p
 	}
 	
 	return 0;
