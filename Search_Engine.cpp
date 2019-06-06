@@ -85,9 +85,10 @@ private:
 			pInit = pInit->pChild[(int)key[i]];
             if (pInit == nullptr){
             	Node* chosen_one = pParent;
-            	int size = (pParent->docs).size()
+            	int size = (pParent->docs).size();
                 suggestion(pParent, size, chosen_one);
                 pInit = chosen_one;
+                cout << "Your word does not exist in the wikipedia. Look these results!" << endl;
                 break;
             }
 		}
