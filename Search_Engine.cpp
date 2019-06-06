@@ -62,7 +62,7 @@ public:
 		if (space_loc.size() > 0) {
 			
 			//first we search for the first word in the query
-			word = key.substr(0,space_loc[1]);
+			word = key.substr(0,space_loc[0]);
 			search_word(word,p);
 			
 			//than we go through a loop in space_loc identifyng words in the middle
@@ -170,7 +170,7 @@ private:
 		string accented_n = "ñ";
 	
 		for (string::size_type i = 0; i < query.length(); i++){
-
+            
 			if (query[i] == ' '){
 				space_loc.push_back(i);
 			}
