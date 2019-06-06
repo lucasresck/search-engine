@@ -250,7 +250,10 @@ int main(){
 		else cout << "\n.. About " << p.size() << " results (" << time << " seconds)" << endl << endl;
 		
 		for(int i=0; i < p.size(); i++){
-			if (i > 0 && i %20 == 0){
+			if (i == 0) title = get_title(titles,p[i]);
+			else title = get_title(titles, p[i] - p[i - 1] - 1);
+			cout << "[" << i+1 << "]" << title << endl;
+			if ((i > 0 && i %20 == 0) || i == p.size() - 1){
 				while(true){
 					cout << "\nDo you want to open any result [n or result number]?" << endl;
 					cin >> answer;
@@ -276,9 +279,6 @@ int main(){
 				}
 			}
 			if (aux == 0) break;
-			if (i == 0) title = get_title(titles,p[i]);
-			else title = get_title(titles, p[i] - p[i - 1] - 1);
-			cout << "[" << i+1 << "]" << title << endl;
 		}
 
 		p.clear();   //restart p
