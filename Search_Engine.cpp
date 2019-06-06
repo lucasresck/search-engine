@@ -3,7 +3,6 @@
 #include <fstream>    //to files
 #include <string>     //to strings
 #include <locale>    //tolower
-#include <map>
 
 using namespace std;
 
@@ -24,7 +23,7 @@ public:
 	Node *pRoot = new Node;
 
 	Trie() {
-		cout << "Iniciating ..." << endl;
+		cout << "Initiating ..." << endl;
 		ifstream serialization ("Serialization.txt");
 		clock_t t = clock();
 		deserialize(serialization);
@@ -43,7 +42,7 @@ public:
 		
 		int count = 0;
 		
-		/if (space_loc.size() > 0) {
+		if (space_loc.size() > 0) {
 			
 			//first we search for the first word in the query
 			word = key.substr(0,space_loc[0]);
@@ -85,6 +84,7 @@ private:
             if (pInit == nullptr){
                 j = 1;
                 break;
+            }
 		}
 		
 		//identifies pages in which the searched word exists and adds them to our vector p
@@ -115,8 +115,10 @@ private:
 				pNode = pNodes.back();
 				if (pNode == pRoot) {
 					loading++;
-					if ((float)loading/0.26 >= 0 && (float)loading/0.26 <= 100)
-						cout << "\r" << (float)loading/0.26 << "% completed.     " << flush;
+					//cout << loading << endl;
+					float status = (float)loading/0.26;
+					if (status >= 0 && status <= 100)
+						cout << "\r" << status << "% completed.     " << flush;
 				}
 				pNodes.pop_back();
 				number = "";
@@ -156,8 +158,9 @@ private:
 		return;
 	}
 	
-	void intersection(vector<int> v1, vector<int> v2) {
-		return;
+	vector<int> intersection(vector<int> v1, vector<int> v2) {
+		vector<int> p;
+		return p;
 	}
 };
 
