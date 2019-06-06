@@ -28,8 +28,13 @@ The Wikipedia corpus used in this project was downloaded as several different te
 
 The way the different Wikipedia pages were stored in each text file was also changed. Taking advantage of the ``<doc id'' tag identifying the begging of each page, we separated them into indivdual text files. 
 
-For the data structure, the group chose to build a trie. A trie is a tree that stores different words. Each letter of a word in the trie is the child of the letter that came before it in the word. In C++, this trie was constructed using pointers. Each pointer has 128 potential "child" pointers correspondig to a specific ascii character. If a person wants to verify if a specific word is in the trie, they can start from the root of the trie (pRoot) and visit the child (pChild) corresponding to the ascii character of each of the letters in the word. If they were able to reach the node corresponding to the last letter in the word, it means that in at least some Wikipedia page that word exists. Acessing the vector documents from that point allows the person to see in which Wikipedia pages that word exists.
+For the data structure, the group chose to build a trie. A trie is a tree that stores different words. In this case, all the words in the Wikipedia corpus. Each letter of a word in the trie is the child of the letter that came before it in the word. 
+For this project, the group constructed a trie going through the text files that corresponded to the Wikipedia pages. Each word in the file that wasn't already in the trie by the time it was reached, was inserted into it. In order to identify the Wikipedia pages that contained each word, a pointer to a vector named documents was placed in each node. So, the number corresponding to the pages in which a certain word appeared were store in a vector that could be accessed in the node corresponding to the last letter in the word. 
 
+
+To build this in C++, pointers were used. Each pointer had 128 potential "child" pointers correspondig to a specific ascii character. If a person wants to verify if a specific word is in the trie, they can start from the root of the trie (pRoot) and visit the child (pChild) corresponding to the ascii character of each of the letters in the word. If they were able to reach the node corresponding to the last letter in the word, it means that in at least some Wikipedia page that word exists. Acessing the vector documents from that point allows the person to see in which Wikipedia pages that word exists.
+
+In order to use this trie outside the scope of the original code in which it was constructed, the group performed a serialization of the trie. 
 
 
 
