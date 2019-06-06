@@ -159,8 +159,23 @@ private:
 	}
 	
 	vector<int> intersection(vector<int> v1, vector<int> v2) {
-		vector<int> p;
-		return p;
+		vector<int> v;
+		int j = 0;
+		for (int i = 0; i < v1.size(); i++) {
+			while (j < v2.size()) {
+				if (v1[i] < v2[j]) break;
+				else if (v1[i] == v2[j]) {
+					j++;
+					v.push_back(v1[i]);
+					break;
+				}
+				else {
+					j++;
+				}
+			} 
+			break;
+		}
+		return v;
 	}
 };
 
