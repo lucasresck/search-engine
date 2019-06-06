@@ -109,15 +109,19 @@ private:
 	void search_word(string key, vector<int> &p){
 		
 		Node* pInit = pRoot;
-		
+		int i = 0;
+        
 		//identifies last node of the word in the trie
 		for (int i = 0; i < key.length(); i++) {
 			pInit = pInit->pChild[(int)key[i]];
+            if (pInit == nullptr){
+                i = 1;
+                break;
 		}
 		
 		//identifies pages in which the searched word exists and adds them to our vector p
-		if (pInit->docs.size() > 0) {
-			p.insert(std::end(p), std::begin(pInit->docs), std::end(pInit->docs));
+		if (i == 0){
+			p.insert(std::end(p), std::begin(pInit->documents), std::end(pInit->documents));
 		}
 	}
 
