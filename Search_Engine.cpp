@@ -27,7 +27,7 @@ public:
 		ifstream serialization ("Serialization.txt");
 		clock_t t = clock();
 		deserialize(serialization);
-		cout << "... Loading index done with ";
+		cout << "\r" << "... Loading index done with " << flush;
 		t = clock() - t;
 		cout << ((float)t)/CLOCKS_PER_SEC;
 		cout << " s!" << endl << endl;
@@ -87,16 +87,11 @@ private:
             	Node* chosen_one = pParent;
             	int size = (pParent->docs).size()
                 suggestion(pParent, size, chosen_one);
-                pInit = pParent;
+                pInit = chosen_one;
                 break;
             }
 		}
-		
-		//identifies pages in which the searched word exists and adds them to our vector p
-		//if (j == 0){
 		p = pInit->docs;
-			
-		}
 	}
 	
 	void suggestion(Node* p, int &len, Node* &chosen_one){
@@ -117,7 +112,7 @@ private:
 		char letter;
 		string number = "";
 		vector<Node*> pNodes;
-		int loading = -97;
+		int loading = 0;
 		while (serialization.get(letter)) {
 			if (letter == ',') {
 				pNode->docs.push_back(stoi(number));
@@ -134,9 +129,8 @@ private:
 				if (pNode == pRoot) {
 					loading++;
 					//cout << loading << endl;
-					float status = (float)loading/0.26;
-					if (status >= 0 && status <= 100)
-						cout << "\r" << status << "% completed.     " << flush;
+					float status = (float)loading/0.41;
+					cout << "\r" << status << "% completed.     " << flush;
 				}
 				pNodes.pop_back();
 				number = "";
@@ -149,13 +143,15 @@ private:
 	void clean_query(string &query, vector<int> &space_loc){
 		locale loc;
 	
-		string accented_a = "Ã¡Ã Ã£Ã¢";
-		string accented_e = "Ã©Ã¨Ãª";
-		string accented_i = "Ã­Ã¬Ã®";
-		string accented_o = "Ã³Ã²Ã´Ãµ";
-		string accented_u = "Ã¹ÃºÃ»";
-		string accented_c = "Ã§";
-		string accented_n = "Ã±";
+		string accented_a = "áàãâ";
+		string accented_e = "éèê";
+		string accented_i = "íìî";
+		string accented_o = "óòôõ";
+		string accented_u = "ùúû";
+		string accented_c = "ç";
+		string accented_n = "ñ";
+		
+		int length = query.length();
 		
 		
 		for (int i = 0; i < query.length(); i++){
@@ -164,13 +160,13 @@ private:
 				space_loc.push_back(i);
 		
 			tolower(query[i], loc);
-			if (accented_a.find(query[i])) query.replace(i,1,"a");
-			else if (accented_e.find(query[i])) query.replace(i,1,"e");
-			else if (accented_i.find(query[i])) query.replace(i,1,"i");
-			else if (accented_o.find(query[i])) query.replace(i,1,"o");
-			else if (accented_u.find(query[i])) query.replace(i,1,"u");
-			else if (accented_c.find(query[i])) query.replace(i,1,"c");
-			else if (accented_n.find(query[i])) query.replace(i,1,"n");
+			if (accented_a.find(query[i]) < length) query.replace(i,1,"a");
+			else if (accented_e.find(query[i]) < length) query.replace(i,1,"e");
+			else if (accented_i.find(query[i]) < length) query.replace(i,1,"i");
+			else if (accented_o.find(query[i]) < length) query.replace(i,1,"o");
+			else if (accented_u.find(query[i]) < length) query.replace(i,1,"u");
+			else if (accented_c.find(query[i]) < length) query.replace(i,1,"c");
+			else if (accented_n.find(query[i]) < length) query.replace(i,1,"n");
 		}
 	
 		return;
@@ -218,9 +214,12 @@ void open_page(int id){
 	string line;
 	string str_id = to_string(id);
 	page.open("SeparetedPages/"+ str_id +".txt", fstream::in);
+	cout << endl;
 	while (getline(page,line)) {
+		if (line == "ENDOFARTICLE.") break;
 		cout << line << endl;		
 	}
+	page.close();
 }
 
 int main(){
@@ -228,14 +227,16 @@ int main(){
 	Trie trie;
 	
 	fstream titles;
-	titles.open("titles_ordered.txt", fstream::in);
 	
 	string answer;
-	int aux = 1;
+	int aux;
+	string title;
 
 	vector<int> p;
 	
 	while(true){
+		titles.open("titles_ordered.txt", fstream::in);
+		aux = 1;
 		cout << "Enter your query: ";
 		string query;
 		getline(cin, query);
@@ -267,18 +268,20 @@ int main(){
 						break;
 					}else if (stoi(answer) < p.size()){
 						aux = 0;
-						open_page(p[i]);
+						open_page(p[stoi(answer) - 1]);
 						break;
 					} 
 					else cout << "Big number. Please, try again." << endl;
 				}
 			}
 			if (aux == 0) break;
-			string title = get_title(titles,p[i]);
+			if (i == 0) title = get_title(titles,p[i]);
+			else title = get_title(titles, p[i] - p[i - 1] - 1);
 			cout << "[" << i+1 << "]" << title << endl;
 		}
 
 		p.clear();   //restart p
+		titles.close();
 	}
 	
 	return 0;
