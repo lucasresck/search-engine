@@ -136,7 +136,8 @@ private:
 		string accented_u = "ùúû";
 		string accented_c = "ç";
 		string accented_n = "ñ";
-	
+		
+		
 		for (int i = 0; i < query.length(); i++){
 
 			if (query[i] == ' ')
@@ -152,6 +153,10 @@ private:
 			else if (accented_n.find(query[i])) query.replace(i,1,"n");
 		}
 	
+		return;
+	}
+	
+	void intersection(vector<int> v1, vector<int> v2) {
 		return;
 	}
 };
