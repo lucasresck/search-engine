@@ -18,10 +18,10 @@ For this project our group developed a search engine that searches for a word, o
 \section*{Relevant references}
 % Link to a github repository where your source code is located. They will have to create a TAG with the following name "FINAL". I will verify that the date of creation of the tag is ​x otherwise it will not grade your work. Moreover, this repository should have a README, where it clearly explains how to run your program, datasets, etc. If I can't run your program, then it won't be evaluated either. Those instructions should also be in this document.
 This is the link to the group's Github repository containing all of the project's 
-source code: . In order to run the program you should...
+source code: xx. In order to run the program you should...
 
 %Link to a video explaining your whole project and showing me how it works. You can take inspiration from the following ​video​.
-This is the link to the group's video: . 
+This is the link to the group's video: xx. 
 
 \section*{Description}
 The Wikipedia corpus used in this project was downloaded as several different text files. Each file contained one or more Wikipedia pages. The first step in the project was to pre-process, in Python, this data. Non ascii symbols, such as ``+'', ``\{'' and ``ß'', were removed, but all of the numbers and the symbols ``\%'', ``\&'', ``-'', ``@'' and `` ' '' were maintained. All of the accents from the words that had them were also removed and the letters in upper case were transformed into lower case. 
@@ -31,12 +31,13 @@ The way the different Wikipedia pages were stored in each text file was also cha
 For the data structure, the group chose to build a trie. A trie is a tree that stores different words. In this case, all the words in the Wikipedia corpus. Each letter of a word in the trie is the child of the letter that came before it in the word. 
 For this project, the trie was constructed going through the text files that corresponded to the Wikipedia pages. Each word in the file that wasn't already in the trie by the time it was reached, was inserted into it. In order to identify the Wikipedia pages that contained each word, a pointer to a vector named documents was placed in each node. These vectors stored numbers identifying each of the pages in which a certain word appears. They could be accessed through the node related to the last letter in the word. 
 
-To build this in C++, pointers were used. Each pointer had 128 potential "child" pointers correspondig to a specific ascii character. If a person wants to verify if a specific word is in the trie, they can start from the root of the trie (pRoot) and visit the child (pChild) corresponding to the ascii character of each of the letters in the word. If they were able to reach the node corresponding to the last letter in the word, it means that in at least some Wikipedia page that word exists. Acessing the vector documents from that point allows the person to see in which Wikipedia pages that word exists.
+To build this in C++, pointers were used. Each pointer had 128 potential ``child'' pointers correspondig to a specific ascii character. If a person wants to verify if a specific word is in the trie, they can start from the root of the trie (pRoot) and visit the child (pChild) corresponding to the ascii character of each of the letters in the word. If they were able to reach the node corresponding to the last letter in the word, it means that in at least some Wikipedia page that word exists. Acessing the vector documents from that point allows the person to see in which Wikipedia pages that word exists.
 
 %maybe make an image with an example of a trie with a vector indicating some pages
 
-In order to access this trie outside the scope of the original code in which it was constructed, the group performed a serialization of the trie, inserting it into a text file. This serialization started from the root and accessed the child nodes. If the node existed, the ascii character corresponding to that node was inserted into the file. Then, that node's  document vector was stored in file, if it existed. The begging of the content of a document vector was marked by a dot (``.'') in the file and the numbers corresponding to the pages were separated by commas (``,''). After this, that node's child was accessed and the same process was done again. When a node did not have any more child nodes a ``-'' sign was written in the document. 
+In order to access this trie outside the scope of the original code in which it was constructed, the group performed a serialization of the trie, inserting it into a text file. This serialization started from the root and accessed the child nodes. If the node existed, the ascii character corresponding to that node was inserted into the file. Then, that node's  document vector was stored in the file, if it contained any page. The begging of the content of a document vector was marked by a dot (``.'') in the file and the numbers corresponding to the pages were separated by commas (``,''). After this, that node's child was accessed and the same process was performed again. When a node did not have any more child nodes a ``-'' sign was written in the document. 
 
+Following the logic through which the serialization was developed, a deserialization function was built. This function constructs the trie again, allowing a fast search through it. 
 
 
 

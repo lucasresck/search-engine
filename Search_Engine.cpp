@@ -23,7 +23,7 @@ public:
 	Node *pRoot = new Node;
 
 	Trie() {
-		cout << "Initiating ..." << endl;
+		cout << "Indexing ..." << endl;
 		ifstream serialization ("Serialization.txt");
 		clock_t t = clock();
 		deserialize(serialization);
@@ -88,7 +88,7 @@ private:
             	int size = (pParent->docs).size();
                 suggestion(pParent, size, chosen_one);
                 pInit = chosen_one;
-                cout << "Your word does not exist in the wikipedia. Look these results!" << endl;
+                cout << "Your word does not exist in Wikipedia. Look at these similar expressions!" << endl;
                 break;
             }
 		}
