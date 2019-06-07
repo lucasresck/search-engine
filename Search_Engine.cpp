@@ -174,6 +174,7 @@ private:
 	}
 	
 	vector<int> intersection(vector<int> v1, vector<int> v2) {
+		cout << endl;
 		vector<int> v;
 		int j = 0;
 		for (int i = 0; i < v1.size(); i++) {
@@ -188,7 +189,7 @@ private:
 					j++;
 				}
 			} 
-			break;
+			//break;
 		}
 		return v;
 	}
@@ -232,6 +233,7 @@ int main(){
 	string answer;
 	int aux;
 	string title;
+	string query;
 
 	vector<int> p;
 	
@@ -239,7 +241,7 @@ int main(){
 		titles.open("titles_ordered.txt", fstream::in);
 		aux = 1;
 		cout << "Enter your query: ";
-		string query;
+		query = "";
 		getline(cin, query);
 
 		float time = clock();
