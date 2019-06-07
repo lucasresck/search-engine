@@ -37,11 +37,11 @@ To build this in C++, pointers were used. Each pointer had 128 potential ``child
 
 In order to access this trie outside the scope of the original code in which it was constructed, the group performed a serialization of the trie, inserting it into a text file. This serialization started from the root and accessed the child nodes. If the node existed, the ascii character corresponding to that node was inserted into the file. Then, that node's  document vector was stored in the file, if it contained any page. The begging of the content of a document vector was marked by a dot (``.'') in the file and the numbers corresponding to the pages were separated by commas (``,''). After this, that node's child was accessed and the same process was performed again. When a node did not have any more child nodes a ``-'' sign was written in the document. Following the logic through which the serialization was developed, a deserialization function was built. 
 
-In the search enviroment, the first step of the program is to perform the deserialization. After that, the user can enter a query.  The query is pre-processed, removing accents and lowering the case of letters in upper case. Then, each word in the query is identified and searched in the trie. If that word exists in one or more Wikipedia page, the documents vector containing those pages is returned. If that word does not exist, similar expressions 
+In the search enviroment, the first step of the program is to perform the deserialization. After that, the user can enter a query.  The query is pre-processed, removing accents and lowering the case of letters in upper case. Then, each word in the query is identified and searched in the trie, by accessing the child of each of the word's letters in the trie. If that word exists in one or more Wikipedia page, the documents vector containing those pages is returned. If that word does not exist, the expression with the same first letters that has the highest number of mentions in Wikipedia pages is returned. This way, the search returns a popular word similar to the one searched by the user. 
 
+If a query has more than one word, each time the program searches for a new word it compares the previous document vector that it had with the new searched one and only keeps the pages that are common to both. As the page numbers are ordered in each vector, tthis is done in linear time. 
 
-
-
+After the search ends, the program returns the numbers of results that were found and identifies the title of each page found in the search. The title of the 20 first results are then displayed in alphabetical order. The user is able open in details an specific page that returned as a result or to see the title of 20 more pagesd found in the search. 
 
 %What did you do? What data structure did you use? Did you do any pre-processing?
 
@@ -50,9 +50,10 @@ The indexing takes aproximately xx minutes. Originally, the group downloaded xx 
 % How long does the indexing take? How many documents did you index? How much space did you use? How long does the consultation take? Make some graphs showing the results.
 
 \section*{Limitations}
+%interface
 
 \section*{Future work}
-%ideas: faster search, faster serialization, better typo correction, 
+%ideas: faster search, faster serialization, better typo correction, wiki in different languages, interface melhor
 
 \section*{Conclusion}
 
