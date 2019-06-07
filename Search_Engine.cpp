@@ -77,36 +77,34 @@ private:
 		
 		Node* pInit = pRoot;
 		Node* pParent;
-		//int j = 0;
+		bool sug = true;
         
 		//identifies last node of the word in the trie
 		for (int i = 0; i < key.length(); i++) {
 			pParent = pInit;
 			pInit = pInit->pChild[(int)key[i]];
             if (pInit == nullptr){
-            	Node* chosen_one = pParent;
-            	int size = (pParent->docs).size();
-                suggestion(pParent, size, chosen_one);
-                pInit = chosen_one;
                 cout << "Your word does not exist in the wikipedia. Look these results!" << endl;
+                sug = false;
+                p.clear();
                 break;
             }
 		}
-		p = pInit->docs;
+		if (sug) p = pInit->docs;
 	}
 	
-	void suggestion(Node* p, int &len, Node* &chosen_one){
-		for (int i = 0; i < 128; i++){
-			if (p->pChild[i]) {
-				if ((p->pChild[i]->docs).size() > len){
-					chosen_one = p->pChild[i];
-					len = (chosen_one->docs).size();
-				}
-				suggestion(p->pChild[i], len, chosen_one);
-			}
-		}
-		return;
-	}
+//	void suggestion_naive(Node* p, int &len, Node* &chosen_one){
+//		for (int i = 0; i < 128; i++){
+//			if (p->pChild[i]) {
+//				if ((p->pChild[i]->docs).size() > len){
+//					chosen_one = p->pChild[i];
+//					len = (chosen_one->docs).size();
+//				}
+//				suggestion(p->pChild[i], len, chosen_one);
+//			}
+//		}
+//		return;
+//	}
 
 	void deserialize(ifstream& serialization) {
 		Node* pNode = pRoot;
@@ -188,7 +186,6 @@ private:
 					j++;
 				}
 			} 
-			break;
 		}
 		return v;
 	}
@@ -223,6 +220,69 @@ void open_page(int id){
 	page.close();
 }
 
+int compare(char c1, char c2){
+	if (c1 == c2) return 0;
+	return 1;
+}
+
+int* partial_med(string word, char ch, int* array){
+	
+	int* arr = new int[word.length()+1];
+	arr[0] = array[0] + 1;
+	for(int i = 1; i <= word.length(); i++){
+		arr[i] = min(min(arr[i-1]+1, array[i] + 1), array[i-1] + compare(ch,word[i]));
+	}
+	return arr;
+}
+
+string suggestion(Node *p, string word, int * array, bool &aux){
+	
+	string s2;
+	
+	
+	for (int i = 0; i < 128; i++){
+		if (p->pChild[i]){
+			
+			bool good = false;
+			int * arr = partial_med(word, (char)i, array);
+			
+			for(int j = 0; j <= word.length(); j++){
+				if (arr[j] <= 1){
+					good = true;
+				}
+				if (j == word.length() && arr[j] <= 1 && (p->pChild[i]->docs).size() > 0){
+					aux = true;
+					string s(1, (char)i);
+					return s;
+				}
+			}
+			if (good){
+				s2 = suggestion(p->pChild[i], word, arr, aux);
+			}
+			if (aux){
+				string s(1, (char)i);
+				return (s + s2);
+			}
+		}		
+	}
+	return ""; 
+}
+
+vector<string> suggestions_med(Node* p, string word){
+	string s;
+	vector<string> v;
+	bool aux = false;
+	int* arr = new int[word.length()+1];
+	
+	while(true){
+		for (int i = 0; i <= word.length();i++)arr[i] = i;
+		s = suggestion(p, word, arr, aux);
+		v.push_back(s);
+		if (v.size() == 1) break;
+	}
+	return v;
+}
+
 int main(){
 	
 	Trie trie;
@@ -232,6 +292,7 @@ int main(){
 	string answer;
 	int aux;
 	string title;
+	string query;
 
 	vector<int> p;
 	
@@ -239,18 +300,35 @@ int main(){
 		titles.open("titles_ordered.txt", fstream::in);
 		aux = 1;
 		cout << "Enter your query: ";
-		string query;
-		getline(cin, query);
+		cin >> query;
 
 		float time = clock();
 		trie.search(query, p);
 		time = (clock() - time)/CLOCKS_PER_SEC;
 		
-		if (p.size() == 0 || p.size() == 1) cout << "\n.. About " << p.size() << " result (" << time << " second)" << endl << endl;
+		//Here, I am doing the suggestions. It's in developing processing.
+		
+//		if (p.size() == 0){
+//			vector<string> v = suggestions_med(trie.pRoot, query);
+//			cout << "Choose one of these words to search: " << endl;
+//			for (int i = 0; i < v.size(); i++){
+//				cout << "[" << i+1 << "]" << v[i] << endl;
+//			}
+//			while(true){
+//				cout << "Digit one of these numbers: ";
+//			    cin >> answer;
+//				if (stoi(answer) == 1){
+//					trie.search(v[stoi(answer)-1], p);
+//					break;
+//				}
+//			}
+//		}
+		
+		if (p.size() == 1) cout << "\n.. About " << p.size() << " result (" << time << " second)" << endl << endl;
 		else cout << "\n.. About " << p.size() << " results (" << time << " seconds)" << endl << endl;
 		
 		for(int i=0; i < p.size(); i++){
-			if (i > 0 && i %20 == 0){
+			if (i > 0 && i % 20 == 0){
 				while(true){
 					cout << "\nDo you want to open any result [n or result number]?" << endl;
 					cin >> answer;
@@ -280,7 +358,19 @@ int main(){
 			else title = get_title(titles, p[i] - p[i - 1] - 1);
 			cout << "[" << i+1 << "]" << title << endl;
 		}
-
+		
+		if (p.size() % 20 != 0 && aux == 1){
+			while(true){
+				cout << "\nDo you want to open any result [n or result number]?" << endl;
+				cin >> answer;
+				if (answer == "n") break;
+				else if (stoi(answer) < p.size()){
+					open_page(p[stoi(answer) - 1]);
+					break;
+				} else cout << "Big number. Please, try again." << endl;
+			}
+		}
+		
 		p.clear();   //restart p
 		titles.close();
 	}
