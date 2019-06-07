@@ -83,9 +83,9 @@ private:
 			pParent = pInit;
 			pInit = pInit->pChild[(int)key[i]];
             if (pInit == nullptr){
-                cout << "Your word does not exist in Wikipedia. Look at these results for a similar expression!" << endl;
                 sug = false;
                 p.clear();
+                break;
             }
 		}
 		if (sug) p = pInit->docs;
@@ -308,6 +308,7 @@ int main(){
 		//Here, I am doing the suggestions. It's in developing processing.
 		
 		if (p.size() == 0){
+            cout << "Your word does not exist in Wikipedia. Look at these results for a similar expression!" << endl;
 			vector<string> v = suggestions_med(trie.pRoot, query);
 			cout << "Choose one of these words to search: " << endl;
 			for (int i = 0; i < v.size(); i++){
