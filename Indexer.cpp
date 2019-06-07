@@ -87,7 +87,7 @@ int main() {
 	t0 = clock();
 	Trie trie;
 	int number_page = 0;
-	for (int doc = 0; doc < 136; doc++) {
+	for (int doc = 0; doc < 5; doc++) {
 		if (doc % 5 == 0) {
 			t = clock() - t0;
 			cout << "Document: " + to_string(doc) << endl;
