@@ -23,7 +23,7 @@ public:
 	Node *pRoot = new Node;
 
 	Trie() {
-		cout << "Initiating ..." << endl;
+		cout << "Indexing ..." << endl;
 		ifstream serialization ("Serialization.txt");
 		clock_t t = clock();
 		deserialize(serialization);
@@ -65,7 +65,6 @@ public:
 			
 		}//if we only have one word
 		else {
-			//word = key.substr(0,key.length());
 			search_word(key,p);
 			return;
 		}
@@ -77,16 +76,27 @@ private:
 		
 		Node* pInit = pRoot;
 		Node* pParent;
+<<<<<<< HEAD
 		bool sug = true;
+=======
+>>>>>>> 70185a90188e09b8462746cda7146aaf87e92d55
         
 		//identifies last node of the word in the trie
 		for (int i = 0; i < key.length(); i++) {
 			pParent = pInit;
 			pInit = pInit->pChild[(int)key[i]];
             if (pInit == nullptr){
+<<<<<<< HEAD
                 cout << "Your word does not exist in the wikipedia. Look these results!" << endl;
                 sug = false;
                 p.clear();
+=======
+            	Node* chosen_one = pParent;
+            	int size = (pParent->docs).size();
+                suggestion(pParent, size, chosen_one);
+                pInit = chosen_one;
+                cout << "Your word does not exist in Wikipedia. Look at these results for a similar expression!" << endl;
+>>>>>>> 70185a90188e09b8462746cda7146aaf87e92d55
                 break;
             }
 		}
@@ -172,6 +182,7 @@ private:
 	}
 	
 	vector<int> intersection(vector<int> v1, vector<int> v2) {
+		cout << endl;
 		vector<int> v;
 		int j = 0;
 		for (int i = 0; i < v1.size(); i++) {
@@ -186,6 +197,10 @@ private:
 					j++;
 				}
 			} 
+<<<<<<< HEAD
+=======
+			//break;
+>>>>>>> 70185a90188e09b8462746cda7146aaf87e92d55
 		}
 		return v;
 	}
@@ -300,7 +315,12 @@ int main(){
 		titles.open("titles_ordered.txt", fstream::in);
 		aux = 1;
 		cout << "Enter your query: ";
+<<<<<<< HEAD
 		cin >> query;
+=======
+		query = "";
+		getline(cin, query);
+>>>>>>> 70185a90188e09b8462746cda7146aaf87e92d55
 
 		float time = clock();
 		trie.search(query, p);
@@ -328,7 +348,14 @@ int main(){
 		else cout << "\n.. About " << p.size() << " results (" << time << " seconds)" << endl << endl;
 		
 		for(int i=0; i < p.size(); i++){
+<<<<<<< HEAD
 			if (i > 0 && i % 20 == 0){
+=======
+			if (i == 0) title = get_title(titles,p[i]);
+			else title = get_title(titles, p[i] - p[i - 1] - 1);
+			cout << "[" << i+1 << "]" << title << endl;
+			if ((i > 0 && i %20 == 0) || i == p.size() - 1){
+>>>>>>> 70185a90188e09b8462746cda7146aaf87e92d55
 				while(true){
 					cout << "\nDo you want to open any result [n or result number]?" << endl;
 					cin >> answer;
@@ -354,9 +381,6 @@ int main(){
 				}
 			}
 			if (aux == 0) break;
-			if (i == 0) title = get_title(titles,p[i]);
-			else title = get_title(titles, p[i] - p[i - 1] - 1);
-			cout << "[" << i+1 << "]" << title << endl;
 		}
 		
 		if (p.size() % 20 != 0 && aux == 1){
