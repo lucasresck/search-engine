@@ -23,7 +23,7 @@ public:
 	Node *pRoot = new Node;
 
 	Trie() {
-		cout << "Initiating ..." << endl;
+		cout << "Indexing ..." << endl;
 		ifstream serialization ("Serialization.txt");
 		clock_t t = clock();
 		deserialize(serialization);
@@ -65,7 +65,6 @@ public:
 			
 		}//if we only have one word
 		else {
-			//word = key.substr(0,key.length());
 			search_word(key,p);
 			return;
 		}
@@ -77,7 +76,6 @@ private:
 		
 		Node* pInit = pRoot;
 		Node* pParent;
-		//int j = 0;
         
 		//identifies last node of the word in the trie
 		for (int i = 0; i < key.length(); i++) {
@@ -88,7 +86,7 @@ private:
             	int size = (pParent->docs).size();
                 suggestion(pParent, size, chosen_one);
                 pInit = chosen_one;
-                cout << "Your word does not exist in the wikipedia. Look these results!" << endl;
+                cout << "Your word does not exist in Wikipedia. Look at these results for a similar expression!" << endl;
                 break;
             }
 		}
