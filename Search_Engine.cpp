@@ -76,28 +76,16 @@ private:
 		
 		Node* pInit = pRoot;
 		Node* pParent;
-<<<<<<< HEAD
 		bool sug = true;
-=======
->>>>>>> 70185a90188e09b8462746cda7146aaf87e92d55
         
 		//identifies last node of the word in the trie
 		for (int i = 0; i < key.length(); i++) {
 			pParent = pInit;
 			pInit = pInit->pChild[(int)key[i]];
             if (pInit == nullptr){
-<<<<<<< HEAD
-                cout << "Your word does not exist in the wikipedia. Look these results!" << endl;
+                cout << "Your word does not exist in Wikipedia. Look at these results for a similar expression!" << endl;
                 sug = false;
                 p.clear();
-=======
-            	Node* chosen_one = pParent;
-            	int size = (pParent->docs).size();
-                suggestion(pParent, size, chosen_one);
-                pInit = chosen_one;
-                cout << "Your word does not exist in Wikipedia. Look at these results for a similar expression!" << endl;
->>>>>>> 70185a90188e09b8462746cda7146aaf87e92d55
-                break;
             }
 		}
 		if (sug) p = pInit->docs;
@@ -197,10 +185,7 @@ private:
 					j++;
 				}
 			} 
-<<<<<<< HEAD
-=======
-			//break;
->>>>>>> 70185a90188e09b8462746cda7146aaf87e92d55
+
 		}
 		return v;
 	}
@@ -245,7 +230,7 @@ int* partial_med(string word, char ch, int* array){
 	int* arr = new int[word.length()+1];
 	arr[0] = array[0] + 1;
 	for(int i = 1; i <= word.length(); i++){
-		arr[i] = min(min(arr[i-1]+1, array[i] + 1), array[i-1] + compare(ch,word[i]));
+		arr[i] = min(min(arr[i-1]+1, array[i] + 1), array[i-1] + compare(ch,word[i-1]));
 	}
 	return arr;
 }
@@ -254,10 +239,8 @@ string suggestion(Node *p, string word, int * array, bool &aux){
 	
 	string s2;
 	
-	
 	for (int i = 0; i < 128; i++){
 		if (p->pChild[i]){
-			
 			bool good = false;
 			int * arr = partial_med(word, (char)i, array);
 			
@@ -286,11 +269,12 @@ string suggestion(Node *p, string word, int * array, bool &aux){
 vector<string> suggestions_med(Node* p, string word){
 	string s;
 	vector<string> v;
+	
 	bool aux = false;
 	int* arr = new int[word.length()+1];
 	
 	while(true){
-		for (int i = 0; i <= word.length();i++)arr[i] = i;
+		for (int i = 0; i <= word.length();i++) arr[i] = i;
 		s = suggestion(p, word, arr, aux);
 		v.push_back(s);
 		if (v.size() == 1) break;
@@ -315,60 +299,54 @@ int main(){
 		titles.open("titles_ordered.txt", fstream::in);
 		aux = 1;
 		cout << "Enter your query: ";
-<<<<<<< HEAD
 		cin >> query;
-=======
-		query = "";
-		getline(cin, query);
->>>>>>> 70185a90188e09b8462746cda7146aaf87e92d55
-
+		
 		float time = clock();
 		trie.search(query, p);
 		time = (clock() - time)/CLOCKS_PER_SEC;
 		
 		//Here, I am doing the suggestions. It's in developing processing.
 		
-//		if (p.size() == 0){
-//			vector<string> v = suggestions_med(trie.pRoot, query);
-//			cout << "Choose one of these words to search: " << endl;
-//			for (int i = 0; i < v.size(); i++){
-//				cout << "[" << i+1 << "]" << v[i] << endl;
-//			}
-//			while(true){
-//				cout << "Digit one of these numbers: ";
-//			    cin >> answer;
-//				if (stoi(answer) == 1){
-//					trie.search(v[stoi(answer)-1], p);
-//					break;
-//				}
-//			}
-//		}
+		if (p.size() == 0){
+			vector<string> v = suggestions_med(trie.pRoot, query);
+			cout << "Choose one of these words to search: " << endl;
+			for (int i = 0; i < v.size(); i++){
+				cout << "[" << i+1 << "]" << v[i] << endl;
+			}
+			while(true){
+				cout << "Digit one of these numbers: ";
+			    cin >> answer;
+				if (stoi(answer) == 1){
+					trie.search(v[stoi(answer)-1], p);
+					break;
+				}
+			}
+		}
 		
 		if (p.size() == 1) cout << "\n.. About " << p.size() << " result (" << time << " second)" << endl << endl;
 		else cout << "\n.. About " << p.size() << " results (" << time << " seconds)" << endl << endl;
 		
 		for(int i=0; i < p.size(); i++){
-<<<<<<< HEAD
-			if (i > 0 && i % 20 == 0){
-=======
+			
 			if (i == 0) title = get_title(titles,p[i]);
 			else title = get_title(titles, p[i] - p[i - 1] - 1);
 			cout << "[" << i+1 << "]" << title << endl;
 			if ((i > 0 && i %20 == 0) || i == p.size() - 1){
->>>>>>> 70185a90188e09b8462746cda7146aaf87e92d55
 				while(true){
 					cout << "\nDo you want to open any result [n or result number]?" << endl;
 					cin >> answer;
 					if (answer == "n"){
-						while(true){				
-							cout << "Show more 20 results [y or n]?" << endl;
-							cin >> answer;
-							if (answer == "n"){
-								aux = 0;
-								break;
-							}else if (answer == "y"){
-								aux = 1;
-								break;
+						while(true){
+							if (i < p.size()){				
+								cout << "Show more 20 results [y or n]?" << endl;
+								cin >> answer;
+								if (answer == "n"){
+									aux = 0;
+									break;
+								}else if (answer == "y"){
+									aux = 1;
+									break;
+								}
 							}
 						}
 						break;
@@ -381,18 +359,6 @@ int main(){
 				}
 			}
 			if (aux == 0) break;
-		}
-		
-		if (p.size() % 20 != 0 && aux == 1){
-			while(true){
-				cout << "\nDo you want to open any result [n or result number]?" << endl;
-				cin >> answer;
-				if (answer == "n") break;
-				else if (stoi(answer) < p.size()){
-					open_page(p[stoi(answer) - 1]);
-					break;
-				} else cout << "Big number. Please, try again." << endl;
-			}
 		}
 		
 		p.clear();   //restart p
