@@ -41,7 +41,7 @@ In the search enviroment, the first step of the program is to perform the deseri
 
 If a query has more than one word, each time the program searches for a new word it compares the previous document vector that it had with the new searched one and only keeps the pages that are common to both. As the page numbers are ordered in each vector, tthis is done in linear time. 
 
-After the search ends, the program returns the numbers of results that were found and identifies the title of each page found in the search. The title of the 20 first results are then displayed in alphabetical order. The user is able open in details an specific page that returned as a result or to see the title of 20 more pagesd found in the search. 
+After the search ends, the program returns the number of results that were found and identifies the title of each page found in the search. The title of the 20 first results are then displayed in alphabetical order. The user is able open in details an specific page that returned as a result or to see the title of 20 more pages found in the search. 
 
 %What did you do? What data structure did you use? Did you do any pre-processing?
 
@@ -50,13 +50,19 @@ The indexing takes aproximately xx minutes. Originally, the group downloaded xx 
 % How long does the indexing take? How many documents did you index? How much space did you use? How long does the consultation take? Make some graphs showing the results.
 
 \section*{Limitations}
-%interface
+Although the group was able to sucessfully perform the task of searching the Wikipedia corpus, there are some limitations to the final result. The serialization and the deserialization are processes that take time and could be done faster. A binary document could be used for this and so could other C++ packages that make it more efficient. The alternative result suggestion, when a word is typed wrong, could also be improved. The place where letters are located in the keyboard could indicate common mistakes between two keys. A list could also be made of other common mistakes made by users. The group could also have taken advantage of algorithms, such as the minimum edit distance, to identify similar words. The interface could have been xx.  
+
+%what about inplace intersection
+%interface, serialization, typo correction
 
 \section*{Future work}
+
 %ideas: faster search, faster serialization, better typo correction, wiki in different languages, interface melhor
 
 \section*{Conclusion}
 
 \section*{Distribution of work in the group}
+The main decisions for the project were taken by the group and all members helped, by making suggestions, thinking of new approaches and fixing bugs, on parts of the project that they were not primarily responsible for. Lucas Moschen was responsible for pre-processing the data. Lucas Emanuel Resck built the data structure for the trie. Lucas Moschen and Alessandra worked on initial versions of the serialization, but Lucas Resck was responsible for the final one. Lucas Moschen built the overall search interface and the document retrival for the results. Alessandra built the word identification for the query and the search ih the trie. Lucas Moschen wrote the function for alternative result suggestion in case of misspelled queries. Alessandra wrote this report for the project. xx edited the video.
+
 %Distribution of work: Indicate clearly which parts of the work were done by each of the members of the group.
 \end{document}
