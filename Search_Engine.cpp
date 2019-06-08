@@ -332,7 +332,7 @@ int main(){
 			if (i == 0) title = get_title(titles,p[i]);
 			else title = get_title(titles, p[i] - p[i - 1] - 1);
 			cout << "[" << i+1 << "]" << title << endl;
-			if ((i > 0 && i %20 == 0) || i == p.size() - 1){
+			if ((i > 0 && (i + 1) %20 == 0) || i == p.size() - 1){
 				while(true){
 					cout << "\nDo you want to open any result [n or result number]?" << endl;
 					cin >> answer;
@@ -343,6 +343,7 @@ int main(){
 								cin >> answer;
 								if (answer == "n"){
 									aux = 0;
+									cout << endl;
 									break;
 								}else if (answer == "y"){
 									aux = 1;
