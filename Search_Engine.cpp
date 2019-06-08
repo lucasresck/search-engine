@@ -89,7 +89,6 @@ private:
 			pParent = pInit;
 			pInit = pInit->pChild[(int)key[i]];
             if (pInit == nullptr){
-            	cout << "HERE" << endl;
                 sug = false;
                 p.clear();
                 break;
@@ -100,19 +99,6 @@ private:
 				p.push_back(*(pInit->docs + i));
 		}
 	}
-	
-//	void suggestion_naive(Node* p, int &len, Node* &chosen_one){
-//		for (int i = 0; i < 128; i++){
-//			if (p->pChild[i]) {
-//				if ((p->pChild[i]->docs).size() > len){
-//					chosen_one = p->pChild[i];
-//					len = (chosen_one->docs).size();
-//				}
-//				suggestion(p->pChild[i], len, chosen_one);
-//			}
-//		}
-//		return;
-//	}
 
 	void deserialize(ifstream& serialization) {
 		Node* pNode = pRoot;
@@ -253,50 +239,55 @@ int* partial_med(string word, char ch, int* array){
 	return arr;
 }
 
-string suggestion(Node *p, string word, int * array, bool &aux){
-	
-	string s2;
+void suggestion(Node *p, string word, int * array, vector<string> &v, vector<int> &is_good, int maxCost){
 	
 	for (int i = 0; i < 128; i++){
+		
 		if (p->pChild[i]){
 			bool good = false;
 			int * arr = partial_med(word, (char)i, array);
 			
 			for(int j = 0; j <= word.length(); j++){
-				if (arr[j] <= 1){
+				if (arr[j] <= maxCost){
 					good = true;
-				}
-				if (j == word.length() && arr[j] <= 1 && p->pChild[i]->doc_size > 0){
-					aux = true;
-					string s(1, (char)i);
-					return s;
+					break;
 				}
 			}
-			if (good){
-				s2 = suggestion(p->pChild[i], word, arr, aux);
-			}
-			if (aux){
+			
+			if (arr[word.length()] <= maxCost && p->pChild[i]->doc_size > 0){
+				is_good.push_back(v.size());
 				string s(1, (char)i);
-				return (s + s2);
+				v.push_back(s);
+				good = false;
 			}
+			
+			if (good){
+				vector<int> new_one;
+				suggestion(p->pChild[i], word, arr, v, new_one, maxCost);
+				string s(1, (char)i);
+				for(int j = 0; j < new_one.size(); j++) {
+					v[new_one[j]] =  s + v[new_one[j]];
+					is_good.push_back(new_one[j]);
+				}
+				
+			}
+			if (v.size() >= 3) return;
 		}		
 	}
-	return ""; 
+	return; 
 }
 
 vector<string> suggestions_med(Node* p, string word){
-	string s;
-	vector<string> v;
 	
-	bool aux = false;
+	vector<string> v;
+	vector<int> number_found;
+	int maxCost = 1;
+	
 	int* arr = new int[word.length()+1];
 	
-	while(true){
-		for (int i = 0; i <= word.length();i++) arr[i] = i;
-		s = suggestion(p, word, arr, aux);
-		v.push_back(s);
-		if (v.size() == 1) break;
-	}
+	for (int i = 0; i <= word.length();i++) arr[i] = i;
+	suggestion(p, word, arr, v, number_found, maxCost);
+	if (v.size() < 3)  suggestion(p, word, arr, v, number_found, 2);
 	return v;
 }
 
@@ -333,9 +324,10 @@ int main(){
 				cout << "[" << i+1 << "]" << v[i] << endl;
 			}
 			while(true){
-				cout << "Digit one of these numbers: ";
+				cout << "Digit one of these numbers or n, if none please you: ";
 			    cin >> answer;
-				if (stoi(answer) == 1){
+			    if (answer == "n") break;
+				else if (stoi(answer) <= 3){
 					trie.search(v[stoi(answer)-1], p);
 					break;
 				}
@@ -343,7 +335,7 @@ int main(){
 		}
 		
 		if (p.size() == 1) cout << "\n.. About " << p.size() << " result (" << time << " second)" << endl << endl;
-		else cout << "\n.. About " << p.size() << " results (" << time << " seconds)" << endl << endl;
+		else if (p.size() > 1) cout << "\n.. About " << p.size() << " results (" << time << " seconds)" << endl << endl;
 		
 		for(int i=0; i < p.size(); i++){
 			
