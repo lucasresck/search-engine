@@ -56,7 +56,7 @@ public:
 				serialization << child;
 				serialize(pNode->pChild[child], serialization);
 				delete pNode->pChild[child];
-				serialization << "-";
+				serialization << '-';
 			}
 			else cout << "Nothing" << endl;
 		}				
@@ -66,9 +66,11 @@ public:
 		int documents_size = pNode->documents.size();
 		serialization << '.';
 		if (documents_size > 0) {
+			serialization << documents_size;
+			serialization << '+';
 			for (int doc = 0; doc < documents_size; doc++) {
 				serialization << pNode->documents[doc];
-				serialization << ",";
+				serialization << ',';
 			}
 		}
 		for (int child = 0; child < 128; child++) {
@@ -76,7 +78,7 @@ public:
 				serialization << child;
 				serialize(pNode->pChild[child], serialization);
 				delete pNode->pChild[child];
-				serialization << "-";
+				serialization << '-';
 			}
 		}				
 	}
@@ -87,7 +89,7 @@ int main() {
 	t0 = clock();
 	Trie trie;
 	int number_page = 0;
-	for (int doc = 0; doc < 136; doc++) {
+	for (int doc = 0; doc < 5; doc++) {
 		if (doc % 5 == 0) {
 			t = clock() - t0;
 			cout << "Document: " + to_string(doc) << endl;

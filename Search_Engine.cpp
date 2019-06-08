@@ -7,12 +7,18 @@
 using namespace std;
 
 struct Node {
-	vector<int> docs;
+	int doc_size;
+	int* docs;//vector<int> docs;
 	Node* pChild[128];
 	Node() {
 		for (int i = 0; i < 128; i++) {
 			pChild[i] = nullptr;
 		}
+		doc_size = 0;
+	}
+	void array_size(int size) {
+		docs = new int[size];
+		doc_size = size;
 	}
 };
 
@@ -83,12 +89,16 @@ private:
 			pParent = pInit;
 			pInit = pInit->pChild[(int)key[i]];
             if (pInit == nullptr){
+            	cout << "HERE" << endl;
                 sug = false;
                 p.clear();
                 break;
             }
 		}
-		if (sug) p = pInit->docs;
+		if (sug) {
+			for (int i = 0; i < pInit->doc_size; i++)
+				p.push_back(*(pInit->docs + i));
+		}
 	}
 	
 //	void suggestion_naive(Node* p, int &len, Node* &chosen_one){
@@ -110,9 +120,12 @@ private:
 		string number = "";
 		vector<Node*> pNodes;
 		int loading = 0;
+		int i;
 		while (serialization.get(letter)) {
 			if (letter == ',') {
-				pNode->docs.push_back(stoi(number));
+				//pNode->docs.push_back(stoi(number));
+				*(pNode->docs + i) = stoi(number);
+				i++;
 				number = "";
 			}
 			else if (letter == '.') {
@@ -130,6 +143,11 @@ private:
 					cout << "\r" << status << "% completed.     " << flush;
 				}
 				pNodes.pop_back();
+				number = "";
+			}
+			else if (letter == '+') {
+				i = 0;
+				pNode->array_size(stoi(number));
 				number = "";
 			}
 			else number = number + letter;
@@ -248,7 +266,7 @@ string suggestion(Node *p, string word, int * array, bool &aux){
 				if (arr[j] <= 1){
 					good = true;
 				}
-				if (j == word.length() && arr[j] <= 1 && (p->pChild[i]->docs).size() > 0){
+				if (j == word.length() && arr[j] <= 1 && p->pChild[i]->doc_size > 0){
 					aux = true;
 					string s(1, (char)i);
 					return s;
