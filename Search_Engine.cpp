@@ -2,7 +2,10 @@
 #include <vector>      //to vector
 #include <fstream>    //to files
 #include <string>     //to strings
-#include <locale>    //tolower
+#include <ctype.h>    //tolower
+#include <bits/stdc++.h>
+#include <iomanip>
+#include<chrono>
 
 using namespace std;
 
@@ -30,7 +33,7 @@ public:
 
 	Trie() {
 		cout << "Indexing ..." << endl;
-		ifstream serialization ("Serialization.txt");
+		ifstream serialization ("Serialization2.txt");
 		clock_t t = clock();
 		deserialize(serialization);
 		cout << "\r" << "... Loading index done with " << flush;
@@ -142,32 +145,28 @@ private:
 
 
 	void clean_query(string &query, vector<int> &space_loc){
-		locale loc;
 	
 		string accented_a = "באדג";
 		string accented_e = "יטך";
 		string accented_i = "םלמ";
 		string accented_o = "ףעפץ";
-		string accented_u = "שתû";
+		string accented_u = "שתתû";
 		string accented_c = "ח";
 		string accented_n = "ס";
 		
-		int length = query.length();
-		
+		transform(query.begin(), query.end(), query.begin(), ::tolower);
 		
 		for (int i = 0; i < query.length(); i++){
 
 			if (query[i] == ' ')
 				space_loc.push_back(i);
-		
-			tolower(query[i], loc);
-			if (accented_a.find(query[i]) < length) query.replace(i,1,"a");
-			else if (accented_e.find(query[i]) < length) query.replace(i,1,"e");
-			else if (accented_i.find(query[i]) < length) query.replace(i,1,"i");
-			else if (accented_o.find(query[i]) < length) query.replace(i,1,"o");
-			else if (accented_u.find(query[i]) < length) query.replace(i,1,"u");
-			else if (accented_c.find(query[i]) < length) query.replace(i,1,"c");
-			else if (accented_n.find(query[i]) < length) query.replace(i,1,"n");
+			if (accented_a.find(query[i]) < accented_a.length()) query.replace(i,1,"a");
+			else if (accented_e.find(query[i]) < accented_e.length()) query.replace(i,1,"e");
+			else if (accented_i.find(query[i]) < accented_i.length()) query.replace(i,1,"i");
+			else if (accented_o.find(query[i]) < accented_o.length()) query.replace(i,1,"o");
+			else if (accented_u.find(query[i]) < accented_u.length()) query.replace(i,1,"u");	
+			else if (accented_c.find(query[i]) < accented_c.length()) query.replace(i,1,"c");
+			else if (accented_n.find(query[i]) < accented_n.length()) query.replace(i,1,"n");
 		}
 	
 		return;
@@ -239,7 +238,7 @@ int* partial_med(string word, char ch, int* array){
 	return arr;
 }
 
-void suggestion(Node *p, string word, int * array, vector<string> &v, vector<int> &is_good, int maxCost){
+void suggestion(Node *p, string word, int * array, vector<string> &v, vector<int> &is_good, int maxCost, vector<int> &size){
 	
 	for (int i = 0; i < 128; i++){
 		
@@ -258,12 +257,13 @@ void suggestion(Node *p, string word, int * array, vector<string> &v, vector<int
 				is_good.push_back(v.size());
 				string s(1, (char)i);
 				v.push_back(s);
+				size.push_back(p->pChild[i]->doc_size);
 				good = false;
 			}
 			
 			if (good){
 				vector<int> new_one;
-				suggestion(p->pChild[i], word, arr, v, new_one, maxCost);
+				suggestion(p->pChild[i], word, arr, v, new_one, maxCost, size);
 				string s(1, (char)i);
 				for(int j = 0; j < new_one.size(); j++) {
 					v[new_one[j]] =  s + v[new_one[j]];
@@ -271,23 +271,74 @@ void suggestion(Node *p, string word, int * array, vector<string> &v, vector<int
 				}
 				
 			}
-			if (v.size() >= 3) return;
+			if (v.size() >= 5) return;
 		}		
 	}
 	return; 
+}
+
+void sorting(vector<string> &s, vector<int> v){
+	vector<string> new_sort;
+	for(int j = 0; j < v.size() - 1; j++){
+		for (int k = j+1; k < v.size(); k ++){
+			if (v[j] > v[k]) continue;
+			else {
+				int value = v[j];
+				v[j] = v[k];
+				v[k] = value;
+				string str = s[j];
+				s[j] = s[k];
+				s[k] = str;
+			}
+		}
+	}
+}
+
+void clean_query(string &query, vector<int> &space_loc){
+
+	string accented_a = "באדג";
+	string accented_e = "יטך";
+	string accented_i = "םלמ";
+	string accented_o = "ףעפץ";
+	string accented_u = "שתתû";
+	string accented_c = "ח";
+	string accented_n = "ס";
+	
+	transform(query.begin(), query.end(), query.begin(), ::tolower);
+	
+	for (int i = 0; i < query.length(); i++){
+
+		if (query[i] == ' ')
+			space_loc.push_back(i);
+		if (accented_a.find(query[i]) < accented_a.length()) query.replace(i,1,"a");
+		else if (accented_e.find(query[i]) < accented_e.length()) query.replace(i,1,"e");
+		else if (accented_i.find(query[i]) < accented_i.length()) query.replace(i,1,"i");
+		else if (accented_o.find(query[i]) < accented_o.length()) query.replace(i,1,"o");
+		else if (accented_u.find(query[i]) < accented_u.length()) query.replace(i,1,"u");	
+		else if (accented_c.find(query[i]) < accented_c.length()) query.replace(i,1,"c");
+		else if (accented_n.find(query[i]) < accented_n.length()) query.replace(i,1,"n");
+	}
+
+	return;
 }
 
 vector<string> suggestions_med(Node* p, string word){
 	
 	vector<string> v;
 	vector<int> number_found;
+	vector<int> size;
+	vector<int> space;
+	
 	int maxCost = 1;
 	
 	int* arr = new int[word.length()+1];
 	
+	clean_query(word, space);
+	
 	for (int i = 0; i <= word.length();i++) arr[i] = i;
-	suggestion(p, word, arr, v, number_found, maxCost);
-	if (v.size() < 3)  suggestion(p, word, arr, v, number_found, 2);
+	suggestion(p, word, arr, v, number_found, maxCost, size);
+	if (v.size() < 5)  suggestion(p, word, arr, v, number_found, 2, size);
+	sorting(v, size);
 	return v;
 }
 
@@ -308,11 +359,12 @@ int main(){
 		titles.open("titles_ordered.txt", fstream::in);
 		aux = 1;
 		cout << "Enter your query: ";
-		cin >> query;
+		getline(cin, query);
 		
-		float time = clock();
+		auto start = chrono::steady_clock::now();
 		trie.search(query, p);
-		time = (clock() - time)/CLOCKS_PER_SEC;
+		auto end = chrono::steady_clock::now();
+		auto diff = end - start;
 		
 		//Here, I am doing the suggestions. It's in developing processing.
 		
@@ -327,15 +379,24 @@ int main(){
 				cout << "Digit one of these numbers or n, if none please you: ";
 			    cin >> answer;
 			    if (answer == "n") break;
-				else if (stoi(answer) <= 3){
+				else if (stoi(answer) <= 5){
 					trie.search(v[stoi(answer)-1], p);
 					break;
 				}
 			}
 		}
 		
-		if (p.size() == 1) cout << "\n.. About " << p.size() << " result (" << time << " second)" << endl << endl;
-		else if (p.size() > 1) cout << "\n.. About " << p.size() << " results (" << time << " seconds)" << endl << endl;
+		
+		if (p.size() == 1) {
+			cout << "\n.. About " << p.size() << " result (" ;
+			cout << fixed << showpoint << setprecision(10) << chrono::duration <double> (diff).count();
+			cout << " second)" << endl << endl;	
+		}
+		else if (p.size() > 1){
+			cout << "\n.. About " << p.size() << " results (";
+			cout << fixed << showpoint << setprecision(10) << chrono::duration <double> (diff).count();
+			cout << " second)" << endl << endl;
+		} 
 		
 		for(int i=0; i < p.size(); i++){
 			
@@ -375,6 +436,7 @@ int main(){
 		
 		p.clear();   //restart p
 		titles.close();
+		cin.ignore();
 	}
 	
 	return 0;
