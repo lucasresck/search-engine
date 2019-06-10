@@ -58,7 +58,7 @@ To build this in C++, pointers were used. Each pointer had 128 potential ``child
 
 %maybe make an image with an example of a trie with a vector indicating some pages
 
-In order to access this trie outside the scope of the original code in which it was constructed, the group performed a serialization of the trie, inserting it into a text file. This serialization started from the root and accessed the child nodes. If the node existed, the ASCII character corresponding to that node was inserted into the file. A dot (``.'') indicates that the number before corresponds to a node. A plus sign (``+'') followed by a number indicates the size of the array of documents, if it contained any page. In this case, the numbers corresponding to the pages were separated by commas (``,''). After this, that node's child was accessed and the same process was performed again. When a node did not have any more child nodes a ``-'' sign was written in the document. Following the logic through which the serialization was developed, a deserialization function was built. 
+In order to access this trie outside the scope of the original code in which it was constructed, the group performed a serialization of the trie, inserting it into a text file. This serialization started from the root and accessed the child nodes. If the node existed, the ASCII character corresponding to that node was inserted into the file. A dot (``.'') indicates that the number before corresponds to a node. A plus sign (``+'') followed by a number indicates the size of the array of documents, if it contained any page. In this case, the numbers corresponding to the pages were separated by commas (``,''). After this, that node's child was accessed and the same process was performed again. When a node did not have any more child nodes a ``\-'' sign was written in the document. Following the logic through which the serialization was developed, a deserialization function was built. 
 
 In the search environment, the first step of the program is to perform the deserialization. After that, the user can enter a query.  The query is pre-processed, removing accents and lowering the case of letters in upper case. Then, each word in the query is identified and searched, by accessing the child of each of the word's letters in the trie. This search is done in linear time, varying on the length of what was searched. If the word searched exists in one or more Wikipedia page, the number corresponding to those pages is inserted into a vector. If that word does not exist, the program runs a minimum edit distance algorithm to identify similar expressions and returns the ones that appear the most in Wikipedia pages. This way, the search returns a popular word similar to the one searched by the user. 
 
@@ -69,14 +69,15 @@ After the search ends, the program returns the number of results that were found
 %What did you do? What data structure did you use? Did you do any pre-processing?
 
 \section*{Results}
-The indexing takes approximately 378,486 seconds. Originally, the group downloaded 164 documents. Each Wikipedia page in those documents was transformed into an individual file. That resulted in 136 files, corresponding to 1.359.870 Wikipedia pages. In order to store the trie xx of space was used. The other tasks involved in the search took xx space. Searching for a certain word takes about 0,000265 seconds. 
+Originally, the group downloaded 164 documents. Each Wikipedia page in those documents was transformed into an individual file. That resulted in 136 files, corresponding to 1.359.870 Wikipedia pages. When running our search tool, the deserealization takes approximately 378,486 seconds. Searching for a certain word takes about 0,000265 seconds. 
 
-In order to 
+Regarding space, the serialization file takes 1,73 GB of space. The ``Title Ordered'' file takes 25 MB and the ``Separated pages'' folder xx. 
+
+In order to analyze that time, the group perfomed two tests. First, 
 % How long does the indexing take? How many documents did you index? How much space did you use? How long does the consultation take? Make some graphs showing the results.
 
 \section*{Limitations}
 Although the group was able to successfully perform the task of searching the Wikipedia corpus, there are some limitations to the final result. Cleaning the documents and doing the serialization and the deserialization are processes that take time and could be done faster. For the serialization, a binary document could be used and so could other C++ packages, such as Boost, that make it more efficient. The intersection of pages, for queries with more than one word, could also be developed in place. Finally, an HTML interface could have been developed for the search, making it more user-friendly.
-
 %text processing demora muito (mas não consertamos pq só rodou uma vez)
 
 \section*{Future work}
@@ -87,7 +88,7 @@ The alternative result suggestion, when a word is typed wrong, is a process that
 Another idea would be to expand the project's database, including searches in the Wikipedia corpus of different languages. Ultimately, we could even search databases that are outside of Wikipedia. 
 
 \section*{Conclusion}
-In conclusion, the group develop
+In conclusion, the group developed a tool that is able to search the English portion of the Wikipedia corpus and return the Wikipedia pages in which that word was found. The user, then, is allowed to open any of the pages that returned as a result. If the user types a word, 
 
 \section*{Distribution of work in the group}
 The main decisions for the project were taken by the group and all members helped, by making suggestions, thinking of new approaches and fixing bugs, on parts of the project that they were not primarily responsible for. Lucas Moschen was responsible for pre-processing the data, building the overall search interface and writing the function for alternative result suggestion in case of misspelled queries. Lucas Emanuel Resck built the data structure for the trie and edited the group's video presenting the project. Lucas Moschen and Alessandra worked on initial versions of the serialization and Lucas Resck was responsible for the final one. Alessandra built the word identification for the query and the search in the trie and wrote this report for the project. 
