@@ -306,13 +306,13 @@ void sorting(vector<string> &s, vector<int> v){
 
 void clean_query(string &query, vector<int> &space_loc){
 
-	int accented_a[4] = {-58,-96,-123,-125};
-	int accented_e[4] = {-118,-120,-126,0};
-	int accented_i[4] = {-95,-115,-116,0};
-	int accented_o[4] = {-28,-94,-107,-109};
-	int accented_u[4] = {-93,-103,-106,0};
-	int accented_c[4] = {-12,0,0,0};
-	int accented_n[4] = {-92,0,0,0};
+	int accented_a[8] = {-58,-96,-123,-125, (int)'Á', (int)'À', (int)'Â', (int)'Ã'};
+	int accented_e[8] = {-118,-120,-126, (int)'É', (int)'Ê', (int)'È', 0, 0};
+	int accented_i[8] = {-95,-115,-116, (int)'Î', (int)'Ì', (int)'Í', 0, 0};
+	int accented_o[8] = {-28,-94,-107,-109, (int)'Õ' , (int)'Ô', (int)'Ó', (int)'Ò'};
+	int accented_u[8] = {-93,-103,-106, (int)'Ú' , (int)'Ù', (int)'Û', 0, 0};
+	int accented_c[8] = {-12, (int)'Ç', 0,0,0,0,0,0};
+	int accented_n[8] = {-92,(int)'Ñ', 0,0,0,0,0,0};
 	
 	transform(query.begin(), query.end(), query.begin(), ::tolower);
 	
@@ -323,7 +323,7 @@ void clean_query(string &query, vector<int> &space_loc){
 		}
 		
 		if ((int)query[i] < 0){
-			for (int k = 0; k < 4; k++){
+			for (int k = 0; k < 8; k++){
 				if ((int)query[i] == accented_a[k]) query.replace(i,1,"a");
 				else if ((int)query[i] == accented_e[k]) query.replace(i,1,"e");
 				else if ((int)query[i] == accented_i[k]) query.replace(i,1,"i");
@@ -394,6 +394,7 @@ void execute(Trie trie){
             cout << "Your input does not exist in Wikipedia." << endl;
             clean_query(query, space);
             if (space.size() > 0) {
+            	cout << "here" << endl;
             	trie.search(query.substr(0,space[0]),p_unique);
             	if (p_unique.size() == 0){
         			if (query.substr(0,space[0]) != " ") {
@@ -420,10 +421,10 @@ void execute(Trie trie){
 					}  		
 				}
 			}
-			
 			else {
 				v = suggestions_med(trie.pRoot, query);
-				cout << "Look at these suggestions: " << endl;
+				if (v.size() == 0) cout << "No suggestions for this word, because every word has three or more erros.";
+				else cout << "Look at these suggestions: " << endl;
 			}
 			for (int i = 0; i < v.size(); i++){
 				cout << "[" << i+1 << "]" << v[i] << endl;
@@ -440,7 +441,8 @@ void execute(Trie trie){
 							break;						
 						} else cout << "Big number! Please, try again!" << endl;
 					} 
-				}
+					else break;
+				} 
 			}
 		}
 		
@@ -478,7 +480,6 @@ void execute(Trie trie){
 									break;
 								}
 							} 
-
 						}
 						cout << "The results finished here :)"<< endl << endl << endl;
 						break;
