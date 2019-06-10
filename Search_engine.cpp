@@ -33,7 +33,7 @@ public:
 
 	Trie() {
 		cout << "Indexing ..." << endl;
-		ifstream serialization ("Serialization2.txt");
+		ifstream serialization ("Serialization.txt");
 		clock_t t = clock();
 		deserialize(serialization);
 		cout << "\r" << "... Loading index done with " << flush;
@@ -43,7 +43,7 @@ public:
 		serialization.close();
 	}
 	
-	void search(string key, vector<int> &p){
+	void search(string key, int* &p, int &p_size){
 		
 		vector<int> space_loc;
 		
@@ -57,33 +57,41 @@ public:
 			
 			//first we search for the first word in the query
 			word = key.substr(0,space_loc[0]);
-			search_word(word,p);
+			search_word(word,p, p_size);
 			
 			//than we go through a loop in space_loc identifyng words in the middle
 			for (int i=0; i < space_loc.size()-1; i++) {
 				word = key.substr(space_loc[i]+1, space_loc[i+1]-1-space_loc[i]);
-				vector<int> p_aux;
-				search_word(word,p_aux);
-				p = intersection(p, p_aux);
+				int* p_aux;
+				p_aux = nullptr;
+				int p_size_aux = 0;
+				search_word(word,p_aux, p_size_aux);
+				vector<int> v = intersection(p, p_size, p_aux, p_size_aux);
+				p = &v[0];
+				p_size = v.size();
 				count = count + 1;
 			}
 			
 			//last we search for the last word in the query
 			word = key.substr(space_loc[space_loc.size()-1] + 1, key.size()-space_loc[space_loc.size()-1]);
-			vector<int> p_aux;
-			search_word(word,p_aux);
-			p = intersection(p, p_aux);
+			int* p_aux;
+			p_aux = nullptr;
+			int p_size_aux = 0;
+			search_word(word,p_aux, p_size_aux);
+			vector<int> v = intersection(p, p_size, p_aux, p_size_aux);
+			p = &v[0];
+			p_size = v.size();
 			
 		}//if we only have one word
 		else {
-			search_word(key,p);
+			search_word(key,p, p_size);
 			return;
 		}
 	}
 
 private:
 	
-	void search_word(string key, vector<int> &p){
+	void search_word(string key, int* &p, int &p_size){
 		
 		Node* pInit = pRoot;
 		Node* pParent;
@@ -95,14 +103,14 @@ private:
 			pInit = pInit->pChild[(int)key[i]];
             if (pInit == nullptr){
                 sug = false;
-                p.clear();
+                p = nullptr;
                 break;
             }
 		}
 		
 		if (sug) {
-			for (int i = 0; i < pInit->doc_size; i++)
-				p.push_back(*(pInit->docs + i));
+			p = pInit->docs;
+			p_size = pInit->doc_size;
 		}
 	}
 
@@ -149,22 +157,24 @@ private:
 
 	void clean_query(string &query, vector<int> &space_loc){
 	
-		int accented_a[4] = {-58,-96,-123,-125};
-		int accented_e[4] = {-118,-120,-126,0};
-		int accented_i[4] = {-95,-115,-116,0};
-		int accented_o[4] = {-28,-94,-107,-109};
-		int accented_u[4] = {-93,-103,-106,0};
-		int accented_c[4] = {-12,0,0,0};
-		int accented_n[4] = {-92,0,0,0};
+		int accented_a[8] = {-58,-96,-123,-125, (int)'Á', (int)'À', (int)'Â', (int)'Ã'};
+		int accented_e[8] = {-118,-120,-126, (int)'É', (int)'Ê', (int)'È', 0, 0};
+		int accented_i[8] = {-95,-115,-116, (int)'Î', (int)'Ì', (int)'Í', 0, 0};
+		int accented_o[8] = {-28,-94,-107,-109, (int)'Õ' , (int)'Ô', (int)'Ó', (int)'Ò'};
+		int accented_u[8] = {-93,-103,-106, (int)'Ú' , (int)'Ù', (int)'Û', 0, 0};
+		int accented_c[8] = {-12, (int)'Ç', 0,0,0,0,0,0};
+		int accented_n[8] = {-92,(int)'Ñ', 0,0,0,0,0,0};
 		
 		transform(query.begin(), query.end(), query.begin(), ::tolower);
 		
 		for (int i = 0; i < query.length(); i++){
 	
-			if (query[i] == ' ') space_loc.push_back(i);
+			if (query[i] == ' '){
+				space_loc.push_back(i);	
+			}
 			
 			if ((int)query[i] < 0){
-				for (int k = 0; k < 4; k++){
+				for (int k = 0; k < 8; k++){
 					if ((int)query[i] == accented_a[k]) query.replace(i,1,"a");
 					else if ((int)query[i] == accented_e[k]) query.replace(i,1,"e");
 					else if ((int)query[i] == accented_i[k]) query.replace(i,1,"i");
@@ -177,18 +187,18 @@ private:
 	
 		}
 		return;
-	}	
+	}
 	
-	vector<int> intersection(vector<int> v1, vector<int> v2) {
+	vector<int> intersection(int* v1, int v1_size, int* v2, int v2_size) {
 		cout << endl;
 		vector<int> v;
 		int j = 0;
-		for (int i = 0; i < v1.size(); i++) {
-			while (j < v2.size()) {
-				if (v1[i] < v2[j]) break;
-				else if (v1[i] == v2[j]) {
+		for (int i = 0; i < v1_size; i++) {
+			while (j < v2_size) {
+				if (*(v1 + i) < *(v2 + j)) break;
+				else if (*(v1 + i) == *(v2 + j)) {
 					j++;
-					v.push_back(v1[i]);
+					v.push_back(*(v1 + i));
 					break;
 				}
 				else {
@@ -224,7 +234,7 @@ void open_page(int id){
 	page.open("SeparatedPages/" + file +".txt", fstream::in);
 	
 	int i = 0;
-	while(i < id){
+	while(i < id%10000){
 		getline(page,line);
 		if (line == "$$$$$$$$$$"){
 			i ++;
@@ -306,13 +316,13 @@ void sorting(vector<string> &s, vector<int> v){
 
 void clean_query(string &query, vector<int> &space_loc){
 
-	int accented_a[4] = {-58,-96,-123,-125};
-	int accented_e[4] = {-118,-120,-126,0};
-	int accented_i[4] = {-95,-115,-116,0};
-	int accented_o[4] = {-28,-94,-107,-109};
-	int accented_u[4] = {-93,-103,-106,0};
-	int accented_c[4] = {-12,0,0,0};
-	int accented_n[4] = {-92,0,0,0};
+	int accented_a[8] = {-58,-96,-123,-125, (int)'Á', (int)'À', (int)'Â', (int)'Ã'};
+	int accented_e[8] = {-118,-120,-126, (int)'É', (int)'Ê', (int)'È', 0, 0};
+	int accented_i[8] = {-95,-115,-116, (int)'Î', (int)'Ì', (int)'Í', 0, 0};
+	int accented_o[8] = {-28,-94,-107,-109, (int)'Õ' , (int)'Ô', (int)'Ó', (int)'Ò'};
+	int accented_u[8] = {-93,-103,-106, (int)'Ú' , (int)'Ù', (int)'Û', 0, 0};
+	int accented_c[8] = {-12, (int)'Ç', 0,0,0,0,0,0};
+	int accented_n[8] = {-92,(int)'Ñ', 0,0,0,0,0,0};
 	
 	transform(query.begin(), query.end(), query.begin(), ::tolower);
 	
@@ -323,7 +333,7 @@ void clean_query(string &query, vector<int> &space_loc){
 		}
 		
 		if ((int)query[i] < 0){
-			for (int k = 0; k < 4; k++){
+			for (int k = 0; k < 8; k++){
 				if ((int)query[i] == accented_a[k]) query.replace(i,1,"a");
 				else if ((int)query[i] == accented_e[k]) query.replace(i,1,"e");
 				else if ((int)query[i] == accented_i[k]) query.replace(i,1,"i");
@@ -371,7 +381,9 @@ void execute(Trie trie){
 	string title;
 	string query;
 
-	vector<int> p;
+	int* p;
+	p = nullptr;
+	int p_size = 0;
 	
 	while(true){
 		titles.open("titles_ordered.txt", fstream::in);
@@ -380,7 +392,7 @@ void execute(Trie trie){
 		getline(cin, query);
 		
 		auto start = chrono::steady_clock::now();
-		trie.search(query, p);
+		trie.search(query, p, p_size);
 		auto end = chrono::steady_clock::now();
 		auto diff = end - start;
 		
@@ -388,14 +400,16 @@ void execute(Trie trie){
 		
 		vector<string> v;
 		
-		if (p.size() == 0){
-			vector<int> p_unique;
+		if (p_size == 0){
+			int* p_unique;
+			p_unique = nullptr;
+			int p_unique_size = 0;
 			vector<int> space;
             cout << "Your input does not exist in Wikipedia." << endl;
             clean_query(query, space);
             if (space.size() > 0) {
-            	trie.search(query.substr(0,space[0]),p_unique);
-            	if (p_unique.size() == 0){
+            	trie.search(query.substr(0,space[0]),p_unique, p_unique_size);
+            	if (p_unique_size == 0){
         			if (query.substr(0,space[0]) != " ") {
         				v = suggestions_med(trie.pRoot, query.substr(0,space[0]));
         				cout << "This word in not in the text. " ; 
@@ -404,9 +418,10 @@ void execute(Trie trie){
 				}
             	else {
 	            	for (int k = 0; k < space.size();k++){
-	            		p_unique.clear();
-	            		trie.search(query.substr(space[k]+1,space[k+1]-1-space[k]), p_unique);
-	            		if (p_unique.size() == 0){
+	            		p_unique = nullptr;
+	            		p_unique_size = 0;
+	            		trie.search(query.substr(space[k]+1,space[k+1]-1-space[k]), p_unique, p_unique_size);
+	            		if (p_unique_size == 0){
 	            			if (query.substr(space[k]+1,space[k+1]-1-space[k]) != " "){
 		            			v = suggestions_med(trie.pRoot, query.substr(space[k]+1,space[k+1]-1-space[k]));
 								cout << "This word in not in the text: " << query.substr(space[k]+1,space[k+1]-1-space[k]);
@@ -415,15 +430,15 @@ void execute(Trie trie){
 							}
 						}
 					} 
-					if (p_unique.size() != 0){
+					if (p_unique_size != 0){
 						cout << "Every input word is in the texts, but they do not appear together :/ . Click enter to continue.";
 					}  		
 				}
 			}
-			
 			else {
 				v = suggestions_med(trie.pRoot, query);
-				cout << "Look at these suggestions: " << endl;
+				if (v.size() == 0) cout << "No suggestions for this word, because every word has three or more erros.";
+				else cout << "Look at these suggestions: " << endl;
 			}
 			for (int i = 0; i < v.size(); i++){
 				cout << "[" << i+1 << "]" << v[i] << endl;
@@ -436,37 +451,38 @@ void execute(Trie trie){
 				else{
 					if (isNumber(answer)){
 						if (stoi(answer) <= 5){
-							trie.search(v[stoi(answer)-1], p);
+							trie.search(v[stoi(answer)-1], p, p_size);
 							break;						
 						} else cout << "Big number! Please, try again!" << endl;
 					} 
-				}
+					else break;
+				} 
 			}
 		}
 		
-		if (p.size() == 1) {
-			cout << "\n.. About " << p.size() << " result (" ;
+		if (p_size == 1) {
+			cout << "\n.. About " << p_size << " result (" ;
 			cout << fixed << showpoint << setprecision(10) << chrono::duration <double> (diff).count();
 			cout << " second)" << endl << endl;	
 		}
-		else if (p.size() > 1){
-			cout << "\n.. About " << p.size() << " results (";
+		else if (p_size > 1){
+			cout << "\n.. About " << p_size << " results (";
 			cout << fixed << showpoint << setprecision(10) << chrono::duration <double> (diff).count();
 			cout << " second)" << endl << endl;
 		} 
 		
-		for(int i=0; i < p.size(); i++){
+		for(int i=0; i < p_size; i++){
 			
 			if (i == 0) title = get_title(titles,p[i]);
 			else title = get_title(titles, p[i] - p[i - 1] - 1);
 			cout << "[" << i+1 << "]" << title << endl;
-			if ((i > 0 && (i + 1) %20 == 0) || i == p.size() - 1){
+			if ((i > 0 && (i + 1) %20 == 0) || i == p_size - 1){
 				while(true){
 					cout << "\nDo you want to open any result [n or result number]?" << endl;
 					cin >> answer;
 					if (answer == "n"){
 						while(true){
-							if (i < p.size() - 1){				
+							if (i < p_size - 1){				
 								cout << "Show more 20 results [y or n]?" << endl;
 								cin >> answer;
 								if (answer == "n"){
@@ -478,25 +494,26 @@ void execute(Trie trie){
 									break;
 								}
 							} 
-
 						}
 						cout << "The results finished here :)"<< endl << endl << endl;
 						break;
 					}else {
 						if (isNumber(answer)){
-							if (stoi(answer) < p.size()){
+							if (stoi(answer) < p_size){
 								aux = 0;
 								open_page(p[stoi(answer) - 1]);
 								break;
 							} 
 							else cout << "Big number. Please, try again." << endl;								
 						}
+						else break;
 					}
 				}
 			}
 			if (aux == 0) break;
 		}
-		p.clear();   //restart p
+		p = nullptr;   //restart p
+		p_size = 0;
 		titles.close();
 		cin.ignore();
 	}	
