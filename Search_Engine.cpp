@@ -12,7 +12,7 @@ using namespace std;
 
 struct Node {
 	int doc_size;
-	int* docs;//vector<int> docs;
+	int* docs;      //vector<int> docs;
 	Node* pChild[128];
 	Node() {
 		for (int i = 0; i < 128; i++) {
@@ -34,7 +34,7 @@ public:
 
 	Trie() {
 		cout << "Indexing ..." << endl;
-		ifstream serialization ("Serialization2.txt");
+		ifstream serialization ("Serialization.txt");
 		clock_t t = clock();
 		deserialize(serialization);
 		cout << "\r" << "... Loading index done with " << flush;
@@ -149,31 +149,35 @@ private:
 
 	void clean_query(string &query, vector<int> &space_loc){
 	
-		string accented_a = "באדג";
-		string accented_e = "יטך";
-		string accented_i = "םלמ";
-		string accented_o = "ףעפץ";
-		string accented_u = "שתתû";
-		string accented_c = "ח";
-		string accented_n = "ס";
+		int accented_a[4] = {-58,-96,-123,-125};
+		int accented_e[4] = {-118,-120,-126,0};
+		int accented_i[4] = {-95,-115,-116,0};
+		int accented_o[4] = {-28,-94,-107,-109};
+		int accented_u[4] = {-93,-103,-106,0};
+		int accented_c[4] = {-12,0,0,0};
+		int accented_n[4] = {-92,0,0,0};
 		
 		transform(query.begin(), query.end(), query.begin(), ::tolower);
 		
 		for (int i = 0; i < query.length(); i++){
-
-			if (query[i] == ' ')
-				space_loc.push_back(i);
-			if (accented_a.find(query[i]) < accented_a.length()) query.replace(i,1,"a");
-			else if (accented_e.find(query[i]) < accented_e.length()) query.replace(i,1,"e");
-			else if (accented_i.find(query[i]) < accented_i.length()) query.replace(i,1,"i");
-			else if (accented_o.find(query[i]) < accented_o.length()) query.replace(i,1,"o");
-			else if (accented_u.find(query[i]) < accented_u.length()) query.replace(i,1,"u");	
-			else if (accented_c.find(query[i]) < accented_c.length()) query.replace(i,1,"c");
-			else if (accented_n.find(query[i]) < accented_n.length()) query.replace(i,1,"n");
-		}
 	
+			if (query[i] == ' ') space_loc.push_back(i);
+			
+			if ((int)query[i] < 0){
+				for (int k = 0; k < 4; k++){
+					if ((int)query[i] == accented_a[k]) query.replace(i,1,"a");
+					else if ((int)query[i] == accented_e[k]) query.replace(i,1,"e");
+					else if ((int)query[i] == accented_i[k]) query.replace(i,1,"i");
+					else if ((int)query[i] == accented_o[k]) query.replace(i,1,"o");
+					else if ((int)query[i] == accented_u[k]) query.replace(i,1,"u");
+					else if ((int)query[i] == accented_c[k]) query.replace(i,1,"c");
+					else if ((int)query[i] == accented_n[k]) query.replace(i,1,"n");
+				}	
+			}
+	
+		}
 		return;
-	}
+	}	
 	
 	vector<int> intersection(vector<int> v1, vector<int> v2) {
 		cout << endl;
@@ -279,7 +283,7 @@ void sorting(vector<string> &s, vector<int> v){
 	vector<string> new_sort;
 	for(int j = 0; j < v.size() - 1; j++){
 		for (int k = j+1; k < v.size(); k ++){
-			if (v[j] > v[k]) continue;
+			if (v[j] >= v[k]) continue;
 			else {
 				int value = v[j];
 				v[j] = v[k];
@@ -294,30 +298,35 @@ void sorting(vector<string> &s, vector<int> v){
 
 void clean_query(string &query, vector<int> &space_loc){
 
-	string accented_a = "באדג";
-	string accented_e = "יטך";
-	string accented_i = "םלמ";
-	string accented_o = "ףעפץ";
-	string accented_u = "שתתû";
-	string accented_c = "ח";
-	string accented_n = "ס";
+	int accented_a[4] = {-58,-96,-123,-125};
+	int accented_e[4] = {-118,-120,-126,0};
+	int accented_i[4] = {-95,-115,-116,0};
+	int accented_o[4] = {-28,-94,-107,-109};
+	int accented_u[4] = {-93,-103,-106,0};
+	int accented_c[4] = {-12,0,0,0};
+	int accented_n[4] = {-92,0,0,0};
 	
 	transform(query.begin(), query.end(), query.begin(), ::tolower);
 	
 	for (int i = 0; i < query.length(); i++){
 
-		if (query[i] == ' ')
-			space_loc.push_back(i);
+		if (query[i] == ' '){
+			space_loc.push_back(i);	
+		}
 		
-		if (accented_a.find(query[i]) < accented_a.length()) query.replace(i,1,"a");
-		else if (accented_e.find(query[i]) < accented_e.length()) query.replace(i,1,"e");
-		else if (accented_i.find(query[i]) < accented_i.length()) query.replace(i,1,"i");
-		else if (accented_o.find(query[i]) < accented_o.length()) query.replace(i,1,"o");
-		else if (accented_u.find(query[i]) < accented_u.length()) query.replace(i,1,"u");	
-		else if (accented_c.find(query[i]) < accented_c.length()) query.replace(i,1,"c");
-		else if (accented_n.find(query[i]) < accented_n.length()) query.replace(i,1,"n");
-	}
+		if ((int)query[i] < 0){
+			for (int k = 0; k < 4; k++){
+				if ((int)query[i] == accented_a[k]) query.replace(i,1,"a");
+				else if ((int)query[i] == accented_e[k]) query.replace(i,1,"e");
+				else if ((int)query[i] == accented_i[k]) query.replace(i,1,"i");
+				else if ((int)query[i] == accented_o[k]) query.replace(i,1,"o");
+				else if ((int)query[i] == accented_u[k]) query.replace(i,1,"u");
+				else if ((int)query[i] == accented_c[k]) query.replace(i,1,"c");
+				else if ((int)query[i] == accented_n[k]) query.replace(i,1,"n");
+			}	
+		}
 
+	}
 	return;
 }
 
@@ -338,12 +347,17 @@ vector<string> suggestions_med(Node* p, string word){
 	return v;
 }
 
-int main(){
-	
-	Trie trie;
+bool isNumber(string s){
+	for (int i = 0; i < s.length(); i++){
+		if (isdigit(s[i])) continue;
+		else return false;
+	}
+	return true;
+}
+
+void execute(Trie trie){
 	
 	fstream titles;
-	
 	string answer;
 	int aux;
 	string title;
@@ -376,7 +390,8 @@ int main(){
             	if (p_unique.size() == 0){
         			if (query.substr(0,space[0]) != " ") {
         				v = suggestions_med(trie.pRoot, query.substr(0,space[0]));
-        				cout << "This word in not in the text. Look at the suggestions for " << query.substr(0,space[0]) << ":" << endl;
+        				cout << "This word in not in the text. " ; 
+						cout << "Look at the suggestions for    " << query.substr(0,space[0]) << ":" << endl;
 					}	
 				}
             	else {
@@ -410,9 +425,13 @@ int main(){
 				cout << "Digit one of these numbers or n (if none pleases you): ";
 			    cin >> answer;
 			    if (answer == "n") break;
-				else if (stoi(answer) <= 5){
-					trie.search(v[stoi(answer)-1], p);
-					break;
+				else{
+					if (isNumber(answer)){
+						if (stoi(answer) <= 5){
+							trie.search(v[stoi(answer)-1], p);
+							break;						
+						} else cout << "Big number! Please, try again!" << endl;
+					} 
 				}
 			}
 		}
@@ -439,7 +458,7 @@ int main(){
 					cin >> answer;
 					if (answer == "n"){
 						while(true){
-							if (i < p.size()){				
+							if (i < p.size() - 1){				
 								cout << "Show more 20 results [y or n]?" << endl;
 								cin >> answer;
 								if (answer == "n"){
@@ -450,24 +469,36 @@ int main(){
 									aux = 1;
 									break;
 								}
-							}
+							} 
+							cout << "The results finished here :)"<< endl << endl << endl;
+							break;
 						}
 						break;
-					}else if (stoi(answer) < p.size()){
-						aux = 0;
-						open_page(p[stoi(answer) - 1]);
-						break;
-					} 
-					else cout << "Big number. Please, try again." << endl;
+					}else {
+						if (isNumber(answer)){
+							if (stoi(answer) < p.size()){
+								aux = 0;
+								open_page(p[stoi(answer) - 1]);
+								break;
+							} 
+							else cout << "Big number. Please, try again." << endl;								
+						}
+					}
 				}
 			}
 			if (aux == 0) break;
 		}
-		
 		p.clear();   //restart p
 		titles.close();
 		cin.ignore();
-	}
+	}	
+}
+
+int main(){
+	
+	Trie trie;
+	
+	execute(trie);
 	
 	return 0;
 }
