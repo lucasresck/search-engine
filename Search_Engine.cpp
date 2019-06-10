@@ -5,7 +5,8 @@
 #include <ctype.h>    //tolower
 #include <bits/stdc++.h>
 #include <iomanip>
-#include<chrono>
+#include <chrono>
+#include <locale>
 
 using namespace std;
 
@@ -44,7 +45,9 @@ public:
 	}
 	
 	void search(string key, vector<int> &p){
+		
 		vector<int> space_loc;
+		
 		clean_query(key, space_loc);
 		
 		string word;
@@ -214,7 +217,7 @@ void open_page(int id){
 	fstream page;
 	string line;
 	string str_id = to_string(id);
-	page.open("SeparetedPages/"+ str_id +".txt", fstream::in);
+	page.open("SeparatedPages/"+ to_string(id/10000) + str_id +".txt", fstream::in);
 	cout << endl;
 	while (getline(page,line)) {
 		if (line == "ENDOFARTICLE.") break;
@@ -223,17 +226,12 @@ void open_page(int id){
 	page.close();
 }
 
-int compare(char c1, char c2){
-	if (c1 == c2) return 0;
-	return 1;
-}
-
 int* partial_med(string word, char ch, int* array){
 	
 	int* arr = new int[word.length()+1];
 	arr[0] = array[0] + 1;
 	for(int i = 1; i <= word.length(); i++){
-		arr[i] = min(min(arr[i-1]+1, array[i] + 1), array[i-1] + compare(ch,word[i-1]));
+		arr[i] = min(min(arr[i-1]+1, array[i] + 1), array[i-1] + (int)(ch!=word[i-1]));
 	}
 	return arr;
 }
@@ -310,6 +308,7 @@ void clean_query(string &query, vector<int> &space_loc){
 
 		if (query[i] == ' ')
 			space_loc.push_back(i);
+		
 		if (accented_a.find(query[i]) < accented_a.length()) query.replace(i,1,"a");
 		else if (accented_e.find(query[i]) < accented_e.length()) query.replace(i,1,"e");
 		else if (accented_i.find(query[i]) < accented_i.length()) query.replace(i,1,"i");
@@ -327,13 +326,10 @@ vector<string> suggestions_med(Node* p, string word){
 	vector<string> v;
 	vector<int> number_found;
 	vector<int> size;
-	vector<int> space;
 	
 	int maxCost = 1;
 	
 	int* arr = new int[word.length()+1];
-	
-	clean_query(word, space);
 	
 	for (int i = 0; i <= word.length();i++) arr[i] = i;
 	suggestion(p, word, arr, v, number_found, maxCost, size);
@@ -366,17 +362,52 @@ int main(){
 		auto end = chrono::steady_clock::now();
 		auto diff = end - start;
 		
-		//Here, I am doing the suggestions. It's in developing processing.
+		//Here, I am doing the suggestions.
+		
+		vector<string> v;
 		
 		if (p.size() == 0){
-            cout << "Your word does not exist in Wikipedia. Look at these results for a similar expression!" << endl;
-			vector<string> v = suggestions_med(trie.pRoot, query);
-			cout << "Choose one of these words to search: " << endl;
+			vector<int> p_unique;
+			vector<int> space;
+            cout << "Your input does not exist in Wikipedia." << endl;
+            clean_query(query, space);
+            if (space.size() > 0) {
+            	trie.search(query.substr(0,space[0]),p_unique);
+            	if (p_unique.size() == 0){
+        			if (query.substr(0,space[0]) != " ") {
+        				v = suggestions_med(trie.pRoot, query.substr(0,space[0]));
+        				cout << "This word in not in the text. Look at the suggestions for " << query.substr(0,space[0]) << ":" << endl;
+					}	
+				}
+            	else {
+	            	for (int k = 0; k < space.size();k++){
+	            		p_unique.clear();
+	            		trie.search(query.substr(space[k]+1,space[k+1]-1-space[k]), p_unique);
+	            		if (p_unique.size() == 0){
+	            			if (query.substr(space[k]+1,space[k+1]-1-space[k]) != " "){
+		            			v = suggestions_med(trie.pRoot, query.substr(space[k]+1,space[k+1]-1-space[k]));
+								cout << "This word in not in the text: " << query.substr(space[k]+1,space[k+1]-1-space[k]);
+								cout << " Look at the suggestions: " << endl;
+								break; 	
+							}
+						}
+					} 
+					if (p_unique.size() != 0){
+						cout << "Every input word is in the texts, but they do not appear together :/ . Click enter to continue.";
+					}  		
+				}
+			}
+			
+			else {
+				v = suggestions_med(trie.pRoot, query);
+				cout << "Look at these suggestions: " << endl;
+			}
 			for (int i = 0; i < v.size(); i++){
 				cout << "[" << i+1 << "]" << v[i] << endl;
 			}
 			while(true){
-				cout << "Digit one of these numbers or n, if none please you: ";
+				if (v.size() == 0) break;
+				cout << "Digit one of these numbers or n (if none pleases you): ";
 			    cin >> answer;
 			    if (answer == "n") break;
 				else if (stoi(answer) <= 5){
@@ -385,7 +416,6 @@ int main(){
 				}
 			}
 		}
-		
 		
 		if (p.size() == 1) {
 			cout << "\n.. About " << p.size() << " result (" ;
