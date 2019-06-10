@@ -230,7 +230,6 @@ void open_page(int id){
 			i ++;
 		}
 	}
-	
 	cout << endl;
 	while (getline(page,line)) {
 		if (line == "ENDOFARTICLE.") break;
