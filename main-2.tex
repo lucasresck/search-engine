@@ -24,11 +24,14 @@ source code: xx. In order to run the program you should...
 This is the link to the group's video: xx. 
 
 \section*{Description}
-The Wikipedia corpus used in this project was downloaded as several different text files. Each file contained one or more Wikipedia pages. The first step in the project was to pre-process, in Python, this data. Non ASCII symbols were removed, and many ASCII symbols too, such as ``+'', ``\{'' and ``]'', but all of the numbers and the symbols ``\%'', ``\&'', ``-'', ``@'' and `` ' '' were maintained. All of the accents from the words that had them were also removed and the letters in upper case were transformed into lower case. 
+The Wikipedia corpus used in this project was downloaded\footnote{site de onde baixamos}  as several different text files. Each file contained one or more Wikipedia pages. The first step in the project was to pre-process, in Python, this data. Some non ASCII and ASCII symbols were removed, such as ``+'', ``\{'' and ``]'', but all of the numbers and the symbols ``\%'', ``\&'', ``-'', ``@'' and `` ' '' were maintained. All of the accents from the words that had them were also eliminated and the letters in upper case were transformed into lower case. 
 
-The way the different Wikipedia pages were stored in each text file was also changed. Taking advantage of the ``<doc id'' tag identifying the begging of each page, we separated them into individual text files. 
+The way the different Wikipedia pages were stored in each text file was also changed. Taking advantage of the ``<doc id'' tag identifying the begging of each page, we separated them into individual text files, one for each page. 
 
-For the data structure, the group chose to build a trie. A trie is a tree that stores different words. In this case, all the words in the Wikipedia corpus. Each letter of a word in the trie is the child of the letter that came before it in the word. 
+For the data structure, the group first chose to build a suffix tree\footnote{as defined at: aula}. A suffix tree is a compressed trie\footnote{vai ser explicado depois} that stores all the suffixes of a given text. The first letter of each suffix starts as a node from the root of the tree and the other letters are the child of that node. If a node only has one child, the child and parent node are compressed into a single node. This structure was built\footnote{geeks for geeks} by going through the text files that corresponded to the Wikipedia pages and inserting it's suffixes. In order to verify 
+
+
+group chose to build a trie. A trie is a tree that stores different words. In this case, all the words in the Wikipedia corpus. Each letter of a word in the trie is the child of the letter that came before it in the word. 
 For this project, the trie was constructed by going through the text files that corresponded to the Wikipedia pages. Each word in the file that wasn't already in the trie by the time it was reached, was inserted into it. In order to identify the Wikipedia pages that contained each word, a pointer to an array named docs was placed in each node. These arrays stored numbers identifying each of the pages in which a certain word appears. They could be accessed through the node related to the last letter in the word. 
 
 To build this in C++, pointers were used. Each pointer had 128 potential ``child'' pointers corresponding to a specific ASCII character. If a person wants to verify if a specific word is in the trie, they can start from the root of the trie (pRoot) and visit the child (pChild) corresponding to the ASCII character of each of the letters in the word. If they were able to reach the node corresponding to the last letter in the word, it means that in at least one Wikipedia page that word exists. Accessing the array docs from that point allows the person to see the number corresponding to those pages.
@@ -54,10 +57,12 @@ Although the group was able to successfully perform the task of searching the Wi
 
 %what about inplace intersection
 %interface, serialization, typo correction
+%text processing demora muito (mas não consertamos pq só rodou uma vez)
 
 \section*{Future work}
 For future work it would be interesting to improve on the mentioned limitations of the project, such as the serialization time and the interface. The project's database could also be expanded, including searches in the Wikipedia corpus of different languages. The alternative result suggestion, when a word is typed wrong, could also be improved.The place where letters are located in the keyboard could indicate common mistakes between two keys. A list could be made as well, of other common mistakes made by users. The group could also have taken advantage of other algorithms to identify similar words. 
 %ideas: faster search, faster serialization, better typo correction, wiki in different languages, interface melhor
+%tempo text processing 
 
 \section*{Conclusion}
 
@@ -65,4 +70,4 @@ For future work it would be interesting to improve on the mentioned limitations 
 The main decisions for the project were taken by the group and all members helped, by making suggestions, thinking of new approaches and fixing bugs, on parts of the project that they were not primarily responsible for. Lucas Moschen was responsible for pre-processing the data, building the overall search interface and writing the function for alternative result suggestion in case of misspelled queries. Lucas Emanuel Resck built the data structure for the trie and edited the group's video presenting the project. Lucas Moschen and Alessandra worked on initial versions of the serialization and Lucas Resck was responsible for the final one. Alessandra built the word identification for the query and the search in the trie and wrote this report for the project. 
 
 %Distribution of work: Indicate clearly which parts of the work were done by each of the members of the group.
-\end{documentdit
+\end{document}
