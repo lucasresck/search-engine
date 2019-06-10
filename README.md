@@ -11,7 +11,7 @@ In order to run the program you should download the files on this link: https://
 
 (i) The folder "separated pages": this folder contains the Wikipedia pages separated in different files and ordered by alphabetical order;
 
-(ii) The file "titles\_ordered.txt": list of titles of Wikipedia pages in alphabetical https://bit.ly/2WvZ0Fjorder;
+(ii) The file "titles\_ordered.txt": list of titles of Wikipedia pages in alphabetical order;
 
 (iii) The file "serialization.txt": contains the serialization of the trie composed by the Wikipedia pages; 
 
