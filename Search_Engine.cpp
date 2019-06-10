@@ -6,7 +6,6 @@
 #include <bits/stdc++.h>
 #include <iomanip>
 #include <chrono>
-#include <locale>
 
 using namespace std;
 
@@ -34,7 +33,7 @@ public:
 
 	Trie() {
 		cout << "Indexing ..." << endl;
-		ifstream serialization ("Serialization.txt");
+		ifstream serialization ("Serialization2.txt");
 		clock_t t = clock();
 		deserialize(serialization);
 		cout << "\r" << "... Loading index done with " << flush;
@@ -100,6 +99,7 @@ private:
                 break;
             }
 		}
+		
 		if (sug) {
 			for (int i = 0; i < pInit->doc_size; i++)
 				p.push_back(*(pInit->docs + i));
@@ -220,8 +220,17 @@ string get_title(fstream &fs, int id){
 void open_page(int id){
 	fstream page;
 	string line;
-	string str_id = to_string(id);
-	page.open("SeparatedPages/"+ to_string(id/10000) + str_id +".txt", fstream::in);
+	string file = to_string(id/10000);
+	page.open("SeparatedPages/" + file +".txt", fstream::in);
+	
+	int i = 0;
+	while(i < id){
+		getline(page,line);
+		if (line == "$$$$$$$$$$"){
+			i ++;
+		}
+	}
+	
 	cout << endl;
 	while (getline(page,line)) {
 		if (line == "ENDOFARTICLE.") break;
@@ -470,9 +479,9 @@ void execute(Trie trie){
 									break;
 								}
 							} 
-							cout << "The results finished here :)"<< endl << endl << endl;
-							break;
+
 						}
+						cout << "The results finished here :)"<< endl << endl << endl;
 						break;
 					}else {
 						if (isNumber(answer)){
