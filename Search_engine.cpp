@@ -221,7 +221,7 @@ void open_page(int id){
 	fstream page;
 	string line;
 	string str_id = to_string(id);
-	page.open("SeparatedPages/"+ to_string(id/10000) + str_id +".txt", fstream::in);
+	page.open("SeparatedPages/"+ to_string(id/10000) + "/" + str_id +".txt", fstream::in);
 	cout << endl;
 	while (getline(page,line)) {
 		if (line == "ENDOFARTICLE.") break;
