@@ -18,7 +18,7 @@ For this project our group developed a search engine that searches for a word, o
 \section*{Relevant references}
 % Link to a github repository where your source code is located. They will have to create a TAG with the following name "FINAL". I will verify that the date of creation of the tag is ​x otherwise it will not grade your work. Moreover, this repository should have a README, where it clearly explains how to run your program, datasets, etc. If I can't run your program, then it won't be evaluated either. Those instructions should also be in this document.
 This is the link to the group's Github repository containing all of the project's 
-source code: xx. In order to run the program you should...
+source code: https://github.com/lucasresck/Search-engine. In order to run the program you should download the files on this link (the folder ``separated pages'', the file ``titles_ordered.txt'' and the file ``serialization.txt''. 
 
 %Link to a video explaining your whole project and showing me how it works. You can take inspiration from the following ​video​.
 This is the link to the group's video: xx. 
@@ -28,11 +28,10 @@ The Wikipedia corpus used in this project was downloaded\footnote{site de onde b
 
 The way the different Wikipedia pages were stored in each text file was also changed. Taking advantage of the ``<doc id'' tag identifying the begging of each page, we separated them into individual text files, one for each page. 
 
-For the data structure, the group first chose to build a suffix tree\footnote{as defined at: aula}. A suffix tree is a compressed trie\footnote{vai ser explicado depois} that stores all the suffixes of a given text. The first letter of each suffix starts as a node from the root of the tree and the other letters are the child of that node. If a node only has one child, the child and parent node are compressed into a single node. This structure was built\footnote{geeks for geeks} by going through the text files that corresponded to the Wikipedia pages and inserting it's suffixes. In order to verify 
+For the data structure, the group first chose to build a suffix tree\footnote{as defined at: aula}. A suffix tree is a compressed trie\footnote{A full explanation of what is a trie is going to be given in the next paragraph.} that stores all the suffixes of a given text. The first letter of each suffix starts as a node from the root of the tree and the other letters are the child of that node. If a node only has one child, the child and parent node are compressed into a single node. This structure was built\footnote{geeks for geeks} by going through the text files that corresponded to the Wikipedia pages and inserting it's suffixes. After building this structure and a search function for it, the group concluded that it would take too much time to insert the Wikipedia corpus into the suffix tree. The group decided, then, to build a trie. 
 
-
-group chose to build a trie. A trie is a tree that stores different words. In this case, all the words in the Wikipedia corpus. Each letter of a word in the trie is the child of the letter that came before it in the word. 
-For this project, the trie was constructed by going through the text files that corresponded to the Wikipedia pages. Each word in the file that wasn't already in the trie by the time it was reached, was inserted into it. In order to identify the Wikipedia pages that contained each word, a pointer to an array named docs was placed in each node. These arrays stored numbers identifying each of the pages in which a certain word appears. They could be accessed through the node related to the last letter in the word. 
+A trie is a tree that stores different words. In this case, all the words in the Wikipedia corpus. Each letter of a word in the trie is the child of the letter that came before it in the word. 
+For this project, the trie was constructed by going through the words in the text files. Each word in the file that wasn't already in the trie by the time it was reached, was inserted into it. In order to identify the Wikipedia pages that contained each word, a pointer to an array named docs was placed in each node. These arrays stored numbers identifying each of the pages in which a certain word appears. They could be accessed through the node related to the last letter in the word. 
 
 To build this in C++, pointers were used. Each pointer had 128 potential ``child'' pointers corresponding to a specific ASCII character. If a person wants to verify if a specific word is in the trie, they can start from the root of the trie (pRoot) and visit the child (pChild) corresponding to the ASCII character of each of the letters in the word. If they were able to reach the node corresponding to the last letter in the word, it means that in at least one Wikipedia page that word exists. Accessing the array docs from that point allows the person to see the number corresponding to those pages.
 
@@ -40,7 +39,7 @@ To build this in C++, pointers were used. Each pointer had 128 potential ``child
 
 In order to access this trie outside the scope of the original code in which it was constructed, the group performed a serialization of the trie, inserting it into a text file. This serialization started from the root and accessed the child nodes. If the node existed, the ASCII character corresponding to that node was inserted into the file. A dot (``.'') indicates that the number before corresponds to a node. A plus sign (``+'') followed by a number indicates the size of the array of documents, if it contained any page. In this case, the numbers corresponding to the pages were separated by commas (``,''). After this, that node's child was accessed and the same process was performed again. When a node did not have any more child nodes a ``-'' sign was written in the document. Following the logic through which the serialization was developed, a deserialization function was built. 
 
-In the search environment, the first step of the program is to perform the deserialization. After that, the user can enter a query.  The query is pre-processed, removing accents and lowering the case of letters in upper case. Then, each word in the query is identified and searched, by accessing the child of each of the word's letters in the trie. The complexity of this search is \theta{n}, where n is the length of the word. If the word searched exists in one or more Wikipedia page, the number corresponding to those pages is inserted into a vector. If that word does not exist, the program runs a minimum edit distance algorithm to identify similar expressions and returns the ones that appear the most in Wikipedia pages. This way, the search returns a popular word similar to the one searched by the user. 
+In the search environment, the first step of the program is to perform the deserialization. After that, the user can enter a query.  The query is pre-processed, removing accents and lowering the case of letters in upper case. Then, each word in the query is identified and searched, by accessing the child of each of the word's letters in the trie. This search is done in linear time, varying on the length of what was searched. If the word searched exists in one or more Wikipedia page, the number corresponding to those pages is inserted into a vector. If that word does not exist, the program runs a minimum edit distance algorithm to identify similar expressions and returns the ones that appear the most in Wikipedia pages. This way, the search returns a popular word similar to the one searched by the user. 
 
 If a query has more than one word, each time the program searches for a new word it compares the previous document vector that it had with the new searched one and only keeps the pages that are common to both. As the page numbers are ordered in each vector, this is done in linear time. 
 
@@ -53,14 +52,15 @@ The indexing takes approximately xx minutes. Originally, the group downloaded xx
 % How long does the indexing take? How many documents did you index? How much space did you use? How long does the consultation take? Make some graphs showing the results.
 
 \section*{Limitations}
-Although the group was able to successfully perform the task of searching the Wikipedia corpus, there are some limitations to the final result. The serialization and the deserialization are processes that take time and could be done faster. A binary document could be used for this and so could other C++ packages that make it more efficient. The intersection of pages, for queries with more than one word, could also be developed in place. An HTML interface could also have been developed for the search, making it more user-friendly.
+Although the group was able to successfully perform the task of searching the Wikipedia corpus, there are some limitations to the final result. The process of cleaning the documents takes a lot of time, but, as it has do be done only once to insert the data into the trie,  
 
-%what about inplace intersection
-%interface, serialization, typo correction
+and doing the serialization and the deserialization are processes that take time and could be done faster. For the serialization, a binary document could be used and so could other C++ packages, such as Boost, that make it more efficient. The intersection of pages, for queries with more than one word, could also be developed in place. Finally, an HTML interface could have been developed for the search, making it more user-friendly.
+
 %text processing demora muito (mas não consertamos pq só rodou uma vez)
 
 \section*{Future work}
-For future work it would be interesting to improve on the mentioned limitations of the project, such as the serialization time and the interface. The project's database could also be expanded, including searches in the Wikipedia corpus of different languages. The alternative result suggestion, when a word is typed wrong, could also be improved.The place where letters are located in the keyboard could indicate common mistakes between two keys. A list could be made as well, of other common mistakes made by users. The group could also have taken advantage of other algorithms to identify similar words. 
+
+In the future, it would also be intersting to compare the efficiency of 
 %ideas: faster search, faster serialization, better typo correction, wiki in different languages, interface melhor
 %tempo text processing 
 
