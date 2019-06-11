@@ -87,7 +87,6 @@ public:
 				v.push_back(v_aux[i]);
 			p = &v[0];
 			p_size = v.size();
-			cout << *p << endl;
 			
 		}//if we only have one word
 		else {
@@ -514,7 +513,7 @@ void execute(Trie trie){
 						break;
 					}else {
 						if (isNumber(answer)){
-							if (stoi(answer) < p_size){
+							if (stoi(answer) <= p_size){
 								aux = 0;
 								open_page(*(p + (stoi(answer) - 1)));
 								break;
