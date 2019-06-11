@@ -157,13 +157,13 @@ private:
 
 	void clean_query(string &query, vector<int> &space_loc){
 	
-		int accented_a[8] = {-58,-96,-123,-125, (int)'Á', (int)'À', (int)'Â', (int)'Ã'};
-		int accented_e[8] = {-118,-120,-126, (int)'É', (int)'Ê', (int)'È', 0, 0};
-		int accented_i[8] = {-95,-115,-116, (int)'Î', (int)'Ì', (int)'Í', 0, 0};
-		int accented_o[8] = {-28,-94,-107,-109, (int)'Õ' , (int)'Ô', (int)'Ó', (int)'Ò'};
-		int accented_u[8] = {-93,-103,-106, (int)'Ú' , (int)'Ù', (int)'Û', 0, 0};
-		int accented_c[8] = {-12, (int)'Ç', 0,0,0,0,0,0};
-		int accented_n[8] = {-92,(int)'Ñ', 0,0,0,0,0,0};
+		int accented_a[8] = {-58,-96,-123,-125, -75, -73, -74, -57};
+		int accented_e[8] = {-118,-120,-126, -112, -46, -44, 0, 0};
+		int accented_i[8] = {-95,-115,-116, -41, -34, -42, 0, 0};
+		int accented_o[8] = {-28,-94,-107,-109, -27, -30, -32, -29};
+		int accented_u[8] = {-93,-103,-106, -23, -21, -22, 0, 0};
+		int accented_c[8] = {-12, -128, 0,0,0,0,0,0};
+		int accented_n[8] = {-92, -91, 0,0,0,0,0,0};
 		
 		transform(query.begin(), query.end(), query.begin(), ::tolower);
 		
@@ -385,6 +385,8 @@ void execute(Trie trie){
 	p = nullptr;
 	int p_size = 0;
 	
+	bool result;
+	
 	while(true){
 		titles.open("titles_ordered.txt", fstream::in);
 		aux = 1;
@@ -455,7 +457,7 @@ void execute(Trie trie){
 							break;						
 						} else cout << "Big number! Please, try again!" << endl;
 					} 
-					else break;
+					else cout << "Wrong answer... Please, try again." << endl;
 				} 
 			}
 		}
@@ -506,7 +508,6 @@ void execute(Trie trie){
 							} 
 							else cout << "Big number. Please, try again." << endl;								
 						}
-						else break;
 					}
 				}
 			}
