@@ -19,7 +19,7 @@ In order to run the program you should download the files on this link: https://
 
 You should unzip the "separated pages" folder and make sure that you have the following packages: iostream, vector, fstream, string, ctype.h, bits/stdc++.h, iomanip and chrono.
 
-The final step is to run the engine.exe file while in the same folder as the  "separated pages", the "titles\_ordered.txt" file and the "serialization.txt".
+The final step is to run the engine.exe file while in the same folder as the  "separated pages", the "titles_ordered.txt" file and the "serialization.txt".
 
 The search should run in around 0,000005 seconds. 
 
