@@ -99,7 +99,7 @@ int main() {
 			cout << " min" << endl << endl;
 		}
 		string page;
-		ifstream file ("CleanedPages/" + to_string(doc) + ".txt");
+		ifstream file ("../CleanedPages/" + to_string(doc) + ".txt");
 		if (file.is_open()) {
 			if (file.good()) {
 				while(getline(file, page)) {
@@ -111,7 +111,7 @@ int main() {
 		file.close();
 	}
 
-	ofstream serialization ("Serialization.txt");
+	ofstream serialization ("../Serialization.txt");
 	trie.serialize(serialization);
 	serialization.close();
 	
