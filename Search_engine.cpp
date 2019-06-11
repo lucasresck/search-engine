@@ -43,7 +43,7 @@ public:
 		serialization.close();
 	}
 	
-	void search(string key, int* &p, int &p_size){
+	void search(string key, int* &p, int &p_size, vector<int> &v){
 		
 		vector<int> space_loc;
 		
@@ -66,7 +66,10 @@ public:
 				p_aux = nullptr;
 				int p_size_aux = 0;
 				search_word(word,p_aux, p_size_aux);
-				vector<int> v = intersection(p, p_size, p_aux, p_size_aux);
+				vector<int> v_aux = intersection(p, p_size, p_aux, p_size_aux);
+				v.clear();
+				for (int i = 0; i < v_aux.size(); i++)
+					v.push_back(v_aux[i]);
 				p = &v[0];
 				p_size = v.size();
 				count = count + 1;
@@ -78,9 +81,13 @@ public:
 			p_aux = nullptr;
 			int p_size_aux = 0;
 			search_word(word,p_aux, p_size_aux);
-			vector<int> v = intersection(p, p_size, p_aux, p_size_aux);
+			vector<int> v_aux = intersection(p, p_size, p_aux, p_size_aux);
+			v.clear();
+			for (int i = 0; i < v_aux.size(); i++)
+				v.push_back(v_aux[i]);
 			p = &v[0];
 			p_size = v.size();
+			cout << *p << endl;
 			
 		}//if we only have one word
 		else {
@@ -212,6 +219,7 @@ private:
 };
 
 string get_title(fstream &fs, int id){
+	//cout << id << endl;
 	//get the title from some page
 	string line;
 	string this_line;
@@ -224,7 +232,7 @@ string get_title(fstream &fs, int id){
 			return this_line;
 		}
 	}
-	return "";
+	return "-";
 }
 
 void open_page(int id){
@@ -386,15 +394,17 @@ void execute(Trie trie){
 	int p_size = 0;
 	
 	bool result;
+	vector<int> v_aux;
 	
 	while(true){
+		v_aux.clear();
 		titles.open("titles_ordered.txt", fstream::in);
 		aux = 1;
 		cout << "Enter your query: ";
 		getline(cin, query);
 		
 		auto start = chrono::steady_clock::now();
-		trie.search(query, p, p_size);
+		trie.search(query, p, p_size, v_aux);
 		auto end = chrono::steady_clock::now();
 		auto diff = end - start;
 		
@@ -410,7 +420,8 @@ void execute(Trie trie){
             cout << "Your input does not exist in Wikipedia." << endl;
             clean_query(query, space);
             if (space.size() > 0) {
-            	trie.search(query.substr(0,space[0]),p_unique, p_unique_size);
+            	v_aux.clear();
+            	trie.search(query.substr(0,space[0]),p_unique, p_unique_size, v_aux);
             	if (p_unique_size == 0){
         			if (query.substr(0,space[0]) != " ") {
         				v = suggestions_med(trie.pRoot, query.substr(0,space[0]));
@@ -422,7 +433,8 @@ void execute(Trie trie){
 	            	for (int k = 0; k < space.size();k++){
 	            		p_unique = nullptr;
 	            		p_unique_size = 0;
-	            		trie.search(query.substr(space[k]+1,space[k+1]-1-space[k]), p_unique, p_unique_size);
+	            		v_aux.clear();
+	            		trie.search(query.substr(space[k]+1,space[k+1]-1-space[k]), p_unique, p_unique_size, v_aux);
 	            		if (p_unique_size == 0){
 	            			if (query.substr(space[k]+1,space[k+1]-1-space[k]) != " "){
 		            			v = suggestions_med(trie.pRoot, query.substr(space[k]+1,space[k+1]-1-space[k]));
@@ -453,7 +465,8 @@ void execute(Trie trie){
 				else{
 					if (isNumber(answer)){
 						if (stoi(answer) <= 5){
-							trie.search(v[stoi(answer)-1], p, p_size);
+							v_aux.clear();
+							trie.search(v[stoi(answer)-1], p, p_size, v_aux);
 							break;						
 						} else cout << "Big number! Please, try again!" << endl;
 					} 
@@ -475,8 +488,8 @@ void execute(Trie trie){
 		
 		for(int i=0; i < p_size; i++){
 			
-			if (i == 0) title = get_title(titles,p[i]);
-			else title = get_title(titles, p[i] - p[i - 1] - 1);
+			if (i == 0) title = get_title(titles,*(p + i));
+			else title = get_title(titles, *(p + i) - *(p + i - 1) - 1);
 			cout << "[" << i+1 << "]" << title << endl;
 			if ((i > 0 && (i + 1) %20 == 0) || i == p_size - 1){
 				while(true){
@@ -503,7 +516,7 @@ void execute(Trie trie){
 						if (isNumber(answer)){
 							if (stoi(answer) < p_size){
 								aux = 0;
-								open_page(p[stoi(answer) - 1]);
+								open_page(*(p + (stoi(answer) - 1)));
 								break;
 							} 
 							else cout << "Big number. Please, try again." << endl;								
