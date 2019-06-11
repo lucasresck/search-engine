@@ -3,6 +3,8 @@
 \usepackage{indentfirst}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{float}
+
 
 \title{Search Engine}
 \author{Alessandra Cid, Lucas Emanuel Resck  
@@ -20,7 +22,7 @@ For this project our group developed a search engine that searches for a word, o
 \section*{Relevant references}
 % Link to a github repository where your source code is located. They will have to create a TAG with the following name "FINAL". I will verify that the date of creation of the tag is ​x otherwise it will not grade your work. Moreover, this repository should have a README, where it clearly explains how to run your program, datasets, etc. If I can't run your program, then it won't be evaluated either. Those instructions should also be in this document.
 This is the link to the group's Github repository containing all of the project's source code: \url{https://github.com/lucasresck/Search-engine}.
-In order to run the program you should download the files on this link (\url{https://bit.ly/2WvZ0Fj}): 
+In order to run the program you should download the files on this link (\url{https://bit.ly/2WYQing}): 
 
 \begin{enumerate}
 \item The folder ``separated pages'': this folder contains the Wikipedia pages separated in different files and ordered by alphabetical order;
@@ -43,6 +45,7 @@ You should unzip the ``separated pages'' folder and make sure that you have the 
 \item iomanip
 \item chrono
  \end{enumerate}
+
 
 The final step is to run the engine.exe file while in the same folder as the  ``separated pages'', the ``titles\_ordered.txt'' file and the ``serialization.txt''.
 %Link to a video explaining your whole project and showing me how it works. You can take inspiration from the following ​video​.
@@ -80,14 +83,23 @@ Regarding space, the serialization file takes 1,73 GB of space. The ``Titles Ord
 
 When running our search tool, the deserialization takes approximately 378,486 seconds. Searching for a certain word is very fast, taking about 0,000005 seconds. 
 
+We analyzed the difference in time between searching for a different number of words \footnote{It is important to notice that we were not analyzing the intersection between pages. These were not queries with 50 different words, they were separated searches of, for example, 50 words.}. The time that the program takes to search for 50 different words, than 100 different words, until 300. As it is possible to see in the graph, the runtime varies a lot. We believe that this might be due to other tasks that were being performed by the computer. We also think that this might be explained because the computer takes advantage of having already searched a certain word. 
+
+\begin{figure}[H]
+ \centering
+  \includegraphics[width=1\textwidth]{graph3}
+ \end{figure}
+ 
+
 The group also analyzed the time that it took to build the trie with a different number of pages, one of the initial problems that we faced when using the suffix tree. First we built the tree with 30.000 pages, then with 60.000, repeating this until 240.000 pages. The result was the time displayed in the graph bellow:
 %\includegraphics[width=3cm, height=4cm]{const_trie}
 
-\begin{figure}[h!]
+\begin{figure}[H]
  \centering
   \includegraphics[width=1\textwidth]{const_trie2}
  \end{figure}
 
+ 
  As it is clear by the graph, the time grows as the number of pages gets higher. We expected the line in the graph to be a smooth one, but there seems to be a slight change around 150.000. We believe that this might be due to other tasks that were being performed by the computer at that time. 
 % How long does the indexing take? How many documents did you index? How much space did you use? How long does the consultation take? Make some graphs showing the results.
 
