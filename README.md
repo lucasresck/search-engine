@@ -26,7 +26,7 @@ If a user misspells a word when searching, our program returns suggestions for a
 - You should unzip the `SeparatedPages` folder and make sure that you have the following packages: iostream, vector, fstream, string, ctype.h, bits/stdc++.h, iomanip and chrono.
 - The final step is to run the `engine.exe` file while in the same folder as the `SeparatedPages`, the `titles_ordered.txt` file and the `Serialization.txt`.
 
-The search should run in around 0,000005 seconds.
+The search should run in around 0,000005 second.
 After the search ends, the program returns the number of results that were found and identifies the title of each page found in the search.
 The title of the 20 first results are then displayed in alphabetical order.
 The user is able to open in details an specific page that was returned as a result or to see the title of 20 more pages found in the search.
