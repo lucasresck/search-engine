@@ -1,5 +1,5 @@
 # search-engine
-> Search engine for English Wikipedia.
+> Search engine for English Wikipedia
 
 We implemented a search engine in C++ to return pages from English Wikipedia. Check out our [screencast](https://youtu.be/iaAe9gT1-Y0).
 
