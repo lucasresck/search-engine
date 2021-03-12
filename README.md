@@ -1,7 +1,7 @@
 # search-engine
 > Search engine for English Wikipedia
 
-We implemented a search engine in C++ to return pages from English Wikipedia. Check out our [screencast](https://youtu.be/iaAe9gT1-Y0).
+We implemented a search engine in C++ to return pages from English Wikipedia. Check our [video](https://youtu.be/iaAe9gT1-Y0).
 
 This is our final project for [Data Structures and Algorithms](https://emap.fgv.br/disciplina/graduacao/estruturas-de-dados-algoritmos), an Applied Mathematics Graduation subject at Getulio Vargas Foundation (FGV, 2019).
 
